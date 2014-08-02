@@ -1,0 +1,39 @@
+<?php
+$url = $this->GetWidgetUrl();
+$iframe = false;
+switch ($url) {
+    case 'nopayment':
+    case 'disabled':
+        break;
+    case 'paid':
+        echo 'Order payment received.  Place Order to complete.';
+        break;
+    case false:
+        echo 'Error creating invoice. Please try again or try another payment solution.';
+        break;
+    default:
+        $iframe = '<iframe src="' . $url . '" style="width:500px; height:150px; overflow:hidden; border:none; margin:auto; display:block;" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
+        break;
+}
+if ($iframe):
+    $quoteId = $this->GetQuoteId();
+    $request = Mage::app()->getRequest();
+    $url = Mage::getUrl('bitcoin/index/ipn/');
+
+    if ($request->getScheme() == 'https') {
+        $url = str_replace('http://', 'https://', $url);
+    }
+    ?>
+    <script type="text/javascript">
+    //<![CDATA[
+        /*new PeriodicalExecuter(function() {new Ajax.Request("<?php echo $url; ?>?quote=<?php echo $quoteId; ?>", {asynchronous:true, evalScripts:true, onComplete:function(request, json) {
+         data = request.responseText.evalJSON(); 
+         if (data.paid) {
+         buttons = $$("button.btn-checkout");
+         buttons.each(function(btn) { btn.click(); })
+         } 
+         }})}, 500000);*/
+
+    //]]>
+    </script>
+<?php endif; ?>

@@ -1,0 +1,13 @@
+<?php $has_invoice = Mage::getSingleton('core/session')->getData('has_invoice'); ?>
+<?php if ($has_invoice): ?>
+    <?php $invoice = Mage::getSingleton('core/session')->getData('invoice'); ?>
+    <iframe src="<?php echo $this->escapeHtml($invoice["url"]); ?>" frameborder="0"
+            width="100%" height="400px"></iframe>
+        <?php else: ?>
+    <div class="messages">
+        <div class="error-msg">
+            <?php $error_msg = Mage::getSingleton('core/session')->getData('error'); ?>
+            <p><?= $this->__($error_msg); ?></p>
+        </div>
+    </div>
+<?php endif; ?>
