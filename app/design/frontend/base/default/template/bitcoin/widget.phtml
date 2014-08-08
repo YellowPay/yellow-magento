@@ -16,13 +16,9 @@ switch ($url) {
         break;
 }
 if ($iframe):
+    echo $iframe;
     $quoteId = $this->GetQuoteId();
-    $request = Mage::app()->getRequest();
     $url = Mage::getUrl('bitcoin/index/ipn/');
-
-    if ($request->getScheme() == 'https') {
-        $url = str_replace('http://', 'https://', $url);
-    }
     ?>
     <script type="text/javascript">
     //<![CDATA[
