@@ -82,6 +82,7 @@
                 <fullscreen>0</fullscreen>
                 <instructions>Pay  through your Bitcoin  - Yellow</instructions>
                 <allowspecific>0</allowspecific>
+                <currencies>USD,AED</currencies>
                 <public_key>wJn25r8RwJn25r8R</public_key>
                 <private_key>wJn25r8RwJn25r8R</private_key>
                 <payment_action>authorize</payment_action>

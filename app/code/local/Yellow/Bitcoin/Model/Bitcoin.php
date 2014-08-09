@@ -42,7 +42,16 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     private $api_uri_create_invoice = "api/invoice/";
     private $api_uri_check_payment  = "api/invoice/[id]/";
     private $order;
-
+    
+    
+    
+    public function isAvailable( $quote = null ) {
+        parent::isAvailable($quote);
+        $quoteCurrency = $quote->getData("quote_currency_code");
+        $currencies = Mage::getStoreConfig('payment/bitcoin/currencies');
+        $currencies = array_map('trim', explode(',', $currencies));
+        return array_search($quoteCurrency, $currencies) !== false;
+    }
     /**
      * Get instructions text from config
      *
