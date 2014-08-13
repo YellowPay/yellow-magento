@@ -161,13 +161,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
 
     public function getOrderPlaceRedirectUrl() {
         if (Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
-            //// clear session vars before 
-            Mage::getSingleton('core/session')->unsetData("current_page");
-            Mage::getSingleton('core/session')->unsetData("order_details");
-            Mage::getSingleton('core/session')->unsetData("invoice");
-            Mage::getSingleton('core/session')->unsetData("has_invoice");
-            Mage::getSingleton('core/session')->unsetData("error");
-            return Mage::getUrl('bitcoin/index/index', array('_secure' => true));
+            $invoice = Mage::getSingleton('core/session')->getData("invoice");
+            return $invoice["url"];
         } else {
             return '';
         }
