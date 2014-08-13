@@ -7,7 +7,7 @@ Class Yellow_Bitcoin_Model_Http  extends Varien_Http_Client{
      * right now i am using php's default values 
      */
     protected $_allowedParams = array(
-        'timeout' => CURLOPT_TIMEOUT,
+        'timeout' => 10,
         'maxredirects' => CURLOPT_MAXREDIRS,
         'proxy' => CURLOPT_PROXY,
         'ssl_cert' => CURLOPT_SSLCERT,
@@ -19,7 +19,7 @@ Class Yellow_Bitcoin_Model_Http  extends Varien_Http_Client{
     public function __construct() {
         parent::__construct();
         $adapter = new Varien_Http_Adapter_Curl();
-        //$adapter->setOptions($this->_allowedParams);
+        $adapter->setOptions($this->_allowedParams);
         $this->setAdapter($adapter);
         return $this;
     }
