@@ -1,5 +1,29 @@
 <?php
-
+/**
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 YellowPay.co
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ **/
 class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
 
     public function IndexAction() {
@@ -40,18 +64,48 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
     public function IpnAction() {
         if ($this->getRequest()->isPost()) {
             $invoice= $this->getRequest()->getPost();
-            $id = base64_decode($this->getRequest()->getParam("id"));
-            $order = Mage::getModel('sales/order')->load($id, 'quote_id');
-            if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_NEW) {
+            $id  = base64_decode($this->getRequest()->getParam("id"));
+            $url = $this->getRequest()->getParam("url");
+            /* simple valdation check | might be changed later */
+            $collection = Mage::getModel("bitcoin/ipn")
+                                    ->getCollection()
+                                    ->getSelect()
+                                    ->where("quote_id = ? OR order_id = ?" , $id)
+                                    ->where("url =?", $url);
+            $yellow_log = $collection->query()->fetchAll();
+            $order = $quote =false;
+            if(count($yellow_log) == 1){
+                if($yellow_log[0]["quote_id"] ===  $id){
+                    $quote = true;
+                    $order = false;
+                }elseif($yellow_log[0]["order_id"] === $id ){
+                    $quote = false;
+                    $order = true;
+                }
+            }else{
                 return $this->_forward("no-route");
             }
-
+            if($quote){
+                $order = Mage::getModel('sales/order')->load($id , "quote_id");
+            }
+            if($order){
+                $order = Mage::getModel('sales/order')->load($id);
+            }
+            if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
+                    return $this->_forward("no-route");
+            }
             switch ($invoice['status']) {
                 case 'paid':
                     $status = Mage::getModel("bitcoin")->getSuccessStatus();
                     $status_message = " client paid :" ; // $invoice["message"];
                     $order->addStatusToHistory($status,  $status_message);
                     $order->sendNewOrderEmail();
+                    $order->save();
+                    break;
+                case 'reissue':
+                    $status = Mage::getModel("bitcoin")->getSuccessStatus();
+                    $status_message = " client has re issued the invoice :" ; // $invoice["message"];
+                    $order->addStatusToHistory($status,  $status_message);
                     $order->save();
                     break;
                 case 'unconfirmed':
@@ -68,9 +122,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $order->addStatusToHistory($status,  $status_message);
                     $order->cancel();
                     $order->save();
-                    
                     break;
-                /// its just a new invoice , I will never expect a post with new status , though I had created it 
+                /// its just a new invoice , I will never expect a post with new status , though I had created the block of it  
                 case 'new':
                 default:
                     break;
