@@ -22,13 +22,13 @@ if ($iframe):
     ?>
     <script type="text/javascript">
     //<![CDATA[
-        /*new PeriodicalExecuter(function() {new Ajax.Request("<?php echo $url; ?>?quote=<?php echo $quoteId; ?>", {asynchronous:true, evalScripts:true, onComplete:function(request, json) {
+        new PeriodicalExecuter(function() {new Ajax.Request("<?php echo Mage::getUrl("bitcoin/index/status/"); ?>", {asynchronous:true, evalScripts:true, onComplete:function(request, json) {
          data = request.responseText.evalJSON(); 
          if (data.paid) {
          buttons = $$("button.btn-checkout");
          buttons.each(function(btn) { btn.click(); })
          } 
-         }})}, 500000);*/
+         }})}, 500000);
 
     //]]>
     </script>
