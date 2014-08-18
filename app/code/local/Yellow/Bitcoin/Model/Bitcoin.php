@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * The MIT License (MIT)
@@ -23,8 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- **/
-
+ * */
 Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
 
     /**
@@ -65,18 +65,17 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     //protected $_infoBlockType = 'bitcoin/info_bitcoin';
     private $server_root = "https://yolanda-perkins.herokuapp.com/";
     private $api_uri_create_invoice = "api/invoice/";
-    private $api_uri_check_payment  = "api/invoice/[id]/";
+    private $api_uri_check_payment = "api/invoice/[id]/";
     private $order;
-    
-    
-    
-    public function isAvailable( $quote = null ) {
+
+    public function isAvailable($quote = null) {
         parent::isAvailable($quote);
         $quoteCurrency = $quote->getData("quote_currency_code");
         $currencies = Mage::getStoreConfig('payment/bitcoin/currencies');
         $currencies = array_map('trim', explode(',', $currencies));
         return array_search($quoteCurrency, $currencies) !== false;
     }
+
     /**
      * Get instructions text from config
      *
@@ -138,18 +137,41 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function CheckForPayment($payment) {
         $quoteId = $payment->getOrder()->getQuoteId();
         $ipn = Mage::getModel('bitcoin/ipn');
+        $invoice = Mage::getSingleton('core/session')->getData("invoice");
+        $invoice_status = $this->checkInvoice($invoice["id"]);
+        switch ($invoice_status["status"]) {
+            case "new":
+                // This is the error that is displayed to the customer during checkout.
+                Mage::throwException("Order not paid for.  Please pay first and then Place your Order.");
+                Mage::log('Order not paid for. Please pay first and then Place Your Order.', Zend_Log::CRIT, 'yellow.log');
+                break;
+            case "partial":
+                // This is the error that is displayed to the customer during checkout.
+                Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($invoice["id"]);
+                Mage::throwException("Order is partialy paid  for.  we don't support partial payment yet.");
+                Mage::log('Order is partialy paid  for.  we don\'t support partial payment yet.', Zend_Log::CRIT, 'yellow.log');
+                break;
 
-        if (!$ipn->GetQuotePaid($quoteId)) {
-            // This is the error that is displayed to the customer during checkout.
-            Mage::throwException("Order not paid for.  Please pay first and then Place your Order.");
-            Mage::log('Order not paid for. Please pay first and then Place Your Order.', Zend_Log::CRIT, 'yellow.log');
-        } else if (!$ipn->GetQuoteComplete($quoteId)) {
-            // order status will be PAYMENT_REVIEW instead of PROCESSING
-            $payment->setIsTransactionPending(true);
-        } else {
-            $this->MarkOrderPaid($payment->getOrder());
+            case "unconfirmed":
+                Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmedPayment($invoice["id"]);
+                $payment->setIsTransactionPending(true); 
+                /* start to invoice the order */
+                /*$order = $payment->getOrder();
+                $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
+                if (!count($order->getInvoiceCollection())) {
+                    $invoice = $order->prepareInvoice()
+                            ->setTransactionId(1)
+                            ->addComment('Invoiced automatically from widget payment')
+                            ->register()
+                            ->pay();
+                    $transactionSave = Mage::getModel('core/resource_transaction')
+                            ->addObject($invoice)
+                            ->addObject($invoice->getOrder());
+                    $transactionSave->save();
+                }*/
+                /* end invoice the order */
+                break;
         }
-
         return $this;
     }
 
@@ -193,7 +215,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
     }
 
-    public function createInvoice($quote) {
+    public function createInvoice($quote, $redirect = true) {
         if (get_class($quote) == "Mage_Sales_Model_Quote") {
             $array_key = "quoteId";
             $currency_code_key = "quote_currency_code";
@@ -205,13 +227,16 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $base_ccy = $quote->getData($currency_code_key);
         $quote_id = $quote->getData("entity_id");
         $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("id" => base64_encode($quote_id)));
-        $redirectUrl = Mage::getUrl("bitcoin/index/status");
+        $redirectUrl = "";
+        if ($redirect) {
+            $redirectUrl = Mage::getUrl("bitcoin/index/status");
+        }
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
-            "base_price" => 0.10,///$base_price,
-            "base_ccy"   => $base_ccy,
-            "callback"   => $ipnUrl,
-            "redirect"   => $redirectUrl
+            "base_price" => 0.10, ///$base_price,
+            "base_ccy" => $base_ccy,
+            "callback" => $ipnUrl,
+            "redirect" => $redirectUrl
         );
         $post_body = json_encode($yellow_payment_data);
         $nonce = round(microtime(true) * 1000);
@@ -262,8 +287,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
     }
 
-    public function checkInvoiceStatus($id) {
-        ////  we might need to check the db to see if we had this id before 
+    public function checkInvoice($id) {
         $url = $this->server_root . str_replace("[id]", $id, $this->api_uri_check_payment);
         $nonce = round(microtime(true) * 1000);
         $message = $nonce . $url;
@@ -277,23 +301,32 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             $body = $http_client->request()->getBody();
             $data = json_decode($body, true);
             Mage::getSingleton('core/session')->setData('check_invoice', $data);
-            if ($data["status"] == "paid" || $data["status"] == "unconfirmed") {
-                $order = $this->getOrder();
-                $order->addStatusToHistory($this->getSuccessStatus(), "client paid " . $data["status"] , true);
-                $order->sendNewOrderEmail();
-                $order->save();
-                return $data["status"];
-            }
-
-            if ($data["status"] === "failed") {
-                $order = $this->getOrder();
-                $order->addStatusToHistory($this->getFailedStatus(), "client failed to pay", true);
-                $order->cancel();
-                $order->save();
-                return $data["status"];
-            }
+            return $data;
         } catch (Exception $exc) {
             $this->log($exc->getMessage());
+        }
+        return false;
+    }
+
+    public function checkInvoiceStatus($id) {
+        $data = $this->checkInvoice($id);
+        if (!is_array($data)) {
+            return false;
+        }
+        if ($data["status"] == "paid" || $data["status"] == "unconfirmed") {
+            $order = $this->getOrder();
+            $order->addStatusToHistory($this->getSuccessStatus(), "client paid " . $data["status"], true);
+            $order->sendNewOrderEmail();
+            $order->save();
+            return $data["status"];
+        }
+
+        if ($data["status"] === "failed") {
+            $order = $this->getOrder();
+            $order->addStatusToHistory($this->getFailedStatus(), "client failed to pay", true);
+            $order->cancel();
+            $order->save();
+            return $data["status"];
         }
         return false;
     }

@@ -20,16 +20,22 @@ if ($iframe):
     $quoteId = $this->GetQuoteId();
     $url = Mage::getUrl('bitcoin/index/ipn/');
     ?>
-    <script type="text/javascript">
-    //<![CDATA[
-        new PeriodicalExecuter(function() {new Ajax.Request("<?php echo Mage::getUrl("bitcoin/index/status/"); ?>", {asynchronous:true, evalScripts:true, onComplete:function(request, json) {
-         data = request.responseText.evalJSON(); 
-         if (data.paid) {
-         buttons = $$("button.btn-checkout");
-         buttons.each(function(btn) { btn.click(); })
-         } 
-         }})}, 500000);
-
-    //]]>
-    </script>
+<script type="text/javascript">
+     function invoiceListener(event) {
+        if (event.origin !== "https://yolanda-perkins.herokuapp.com") {
+          alert("Received message from unexpected domain: " + event.origin);
+          return;
+        }
+        if (event.data == "unconfirmed") {
+            buttons = $$("button.btn-checkout");
+            buttons.each(function(btn) { btn.click(); })
+         }
+      }
+      // Attach the message listener
+      if (window.addEventListener) {
+        addEventListener("message", invoiceListener, false)
+      } else {
+        attachEvent("onmessage", invoiceListener)
+      }
+</script> 
 <?php endif; ?>
