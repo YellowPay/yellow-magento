@@ -103,6 +103,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                     $order->sendNewOrderEmail();
                     $order->save();
+                    /* create an invoice */
+                    Mage::getModel('sales/order_invoice_api')->create($order->getIncrementId(), array());
                     break;
                 case 'reissue':
                     $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had reissue / renew payment ready
