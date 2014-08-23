@@ -390,7 +390,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     }
 
     public function getSuccessStatus() {
-        return Mage_Sales_Model_Order::STATE_COMPLETE;
+        return Mage_Sales_Model_Order::STATE_PROCESSING;
     }
 
     public function getFailedStatus() {

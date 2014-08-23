@@ -62,10 +62,11 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
     }
 
     public function IpnAction() {
+        /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */ 
         if ($this->getRequest()->isPost()) {
-            $invoice= $this->getRequest()->getPost();
             $id  = base64_decode($this->getRequest()->getParam("id"));
-            $url = $this->getRequest()->getParam("url");
+            $body = json_decode(file_get_contents('php://input'),true);
+            $url = $body["url"];
             /* simple valdation check | might be changed later */
             $collection = Mage::getModel("bitcoin/ipn")
                                     ->getCollection()
@@ -73,62 +74,64 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                                     ->where("quote_id = ? OR order_id = ?" , $id)
                                     ->where("url =?", $url);
             $yellow_log = $collection->query()->fetchAll();
-            $order = $quote =false;
+            $from_order = $from_quote =false;
             if(count($yellow_log) == 1){
                 if($yellow_log[0]["quote_id"] ===  $id){
-                    $quote = true;
-                    $order = false;
+                    $from_quote = true;
+                    $from_order = false;
                 }elseif($yellow_log[0]["order_id"] === $id ){
-                    $quote = false;
-                    $order = true;
+                    $from_quote = false;
+                    $from_order = true;
                 }
             }else{
                 return $this->_forward("no-route");
             }
-            if($quote){
-                $order = Mage::getModel('sales/order')->load($id , "quote_id");
-            }
-            if($order){
+            if($from_order){
                 $order = Mage::getModel('sales/order')->load($id);
+            }
+            if($from_quote){
+                $order = Mage::getModel('sales/order')->load($id,"quote_id");
             }
             if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
                     return $this->_forward("no-route");
             }
-            switch ($invoice['status']) {
+            switch ($body['status']) {
                 case 'paid':
-                    $status = Mage::getModel("bitcoin")->getSuccessStatus();
-                    $status_message = " client paid :" ; // $invoice["message"];
+                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
+                    $status_message = " client paid " ; // $invoice["message"];
                     $order->addStatusToHistory($status,  $status_message);
+                    $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                     $order->sendNewOrderEmail();
                     $order->save();
                     break;
                 case 'reissue':
-                    $status = Mage::getModel("bitcoin")->getSuccessStatus();
-                    $status_message = " client has re issued the invoice :" ; // $invoice["message"];
+                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had reissue / renew payment ready
+                    $status_message = " client has re issued the invoice " ; // $invoice["message"];
                     $order->addStatusToHistory($status,  $status_message);
                     $order->save();
                     break;
-                case 'unconfirmed':
                 case 'partial':
-                    $status = Mage::getModel("bitcoin")->getSuccessStatus();
+                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had partail payment ready
                     $status_message = " client paid but payment is unconfirmed / partial :" ; // $invoice["message"];
                     $order->addStatusToHistory($status,  $status_message);
                     $order->save();
                     break;
                 case 'failed':
                 case 'invalid':
-                    $status = Mage::getModel("bitcoin")->getFailedStatus();
+                    $status = Mage::getModel("bitcoin/bitcoin")->getFailedStatus();
                     $status_message = " client failed to pay :" ; // $invoice["message"];
                     $order->addStatusToHistory($status,  $status_message);
+                    $order->setState(Mage_Sales_Model_Order::STATE_HOLDED);
                     $order->cancel();
                     $order->save();
                     break;
-                /// its just a new invoice , I will never expect a post with new status , though I had created the block of it  
+                /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
+                case 'unconfirmed':
                 case 'new':
                 default:
                     break;
             }
-            return json_encode(array("message" => "done"));
+            echo json_encode(array("message" => "done"));
         } else {
             return $this->_forward("no-route");
         }
