@@ -62,10 +62,14 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
     }
 
     public function IpnAction() {
-        /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */ 
+      /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */ 
+      $this->log("-----------start an IPN request proccessing ------------");
         if ($this->getRequest()->isPost()) {
             $id  = base64_decode($this->getRequest()->getParam("id"));
-            $body = json_decode(file_get_contents('php://input'),true);
+            $data = file_get_contents('php://input');
+            $body = json_decode($data,true);
+            $this->log("Id is :{$id}");
+            $this->log("I had recived this data :" . $data);
             $url = $body["url"];
             /* simple valdation check | might be changed later */
             $collection = Mage::getModel("bitcoin/ipn")
@@ -79,9 +83,11 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                 if($yellow_log[0]["quote_id"] ===  $id){
                     $from_quote = true;
                     $from_order = false;
+                    $this->log("its a quote");
                 }elseif($yellow_log[0]["order_id"] === $id ){
                     $from_quote = false;
                     $from_order = true;
+                    $this->log("its an order");
                 }
             }else{
                 return $this->_forward("no-route");
@@ -93,6 +99,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                 $order = Mage::getModel('sales/order')->load($id,"quote_id");
             }
             if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
+                    $this->log("either this order is not paid via Yellow , or it had unallowed state ");
                     return $this->_forward("no-route");
             }
             switch ($body['status']) {
@@ -137,6 +144,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
         } else {
             return $this->_forward("no-route");
         }
+       $this->log("----------- finished an IPN request ---------------------------------");
     }
 
     public function StatusAction() {
@@ -177,5 +185,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
         $order = $order->loadByIncrementId($session->getLastRealOrderId());
         return $order;
     }
-
+  private function log($message){
+    return Mage::log($message, null, "yellow.log");
+  }
 }
