@@ -63,7 +63,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      */
     protected $_formBlockType = 'bitcoin/form_bitcoin';
     //protected $_infoBlockType = 'bitcoin/info_bitcoin';
-    private $server_root = "https://yolanda-perkins.herokuapp.com/";
+    private $server_root = "https://yolanda-perkins-stage.herokuapp.com/";
     private $api_uri_create_invoice = "api/invoice/";
     private $api_uri_check_payment = "api/invoice/[id]/";
     private $order;
