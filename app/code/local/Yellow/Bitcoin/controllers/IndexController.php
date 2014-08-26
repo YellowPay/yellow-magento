@@ -78,6 +78,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                     $order->sendNewOrderEmail();
                     $order->save();
+                    Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($body["id"]);
                     /* create an invoice */
                     Mage::getModel('sales/order_invoice_api')->create($order->getIncrementId(), array());
                     $this->log("Magento Invoice created !");
@@ -93,6 +94,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $status_message = " client paid but payment is unconfirmed / partial :"; // $invoice["message"];
                     $order->addStatusToHistory($status, $status_message);
                     $order->save();
+                    Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
                     break;
                 case 'failed':
                 case 'invalid':
@@ -105,6 +107,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     break;
                 /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
                 case 'unconfirmed':
+                    Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($body["id"]);
                 case 'new':
                 default:
                     break;

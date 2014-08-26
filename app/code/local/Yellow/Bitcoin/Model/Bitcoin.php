@@ -189,7 +189,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 break;
 
             case "unconfirmed":
-                Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmedPayment($invoice["id"]);
+                Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($invoice["id"]);
                 $payment->setIsTransactionPending(true); 
                 /* start to invoice the order */
                 /*$order = $payment->getOrder();
@@ -346,6 +346,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             $order->addStatusToHistory($this->getSuccessStatus(), "client paid successfully , payment status :" . $data["status"], true);
             $order->sendNewOrderEmail();
             $order->save();
+            Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
             return $data["status"];
         }
         
@@ -353,6 +354,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             $order = $this->getOrder();
             $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW , "Unconfirmed Payment , it need some time to confirm , invoice Id : {$data['id']}");
             $order->save();
+            Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($id);
             return $data["status"];
         }
         

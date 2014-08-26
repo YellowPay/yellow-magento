@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * The MIT License (MIT)
@@ -23,33 +24,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- **/
-
+ * */
 class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abstract {
 
     protected function _construct() {
         $this->_init('bitcoin/ipn', 'id');
     }
-    
-    public function MarkAsUnconfirmedPayment($invoice_id){
-        return $this->updatePayment($invoice_id , "unconfirmed");
+
+    public function MarkAsUnconfirmed($invoice_id) {
+        return $this->updatePayment($invoice_id, "unconfirmed");
     }
-    
-    
-    public function MarkAsPartial($invoice_id){
-        return $this->updatePayment($invoice_id , "partial");
+
+    public function MarkAsPaid($invoice_id) {
+        return $this->updatePayment($invoice_id, "paid");
     }
-    
-    private function updatePayment($invoice_id , $status){
+
+    public function MarkAsPartial($invoice_id) {
+        return $this->updatePayment($invoice_id, "partial");
+    }
+
+    private function updatePayment($invoice_id, $status) {
         $wa = $this->_getWriteAdapter();
         try {
-            $fields = $where = array();
+            $where = array();
             $wa->beginTransaction();
-            $fields[] = $wa->quoteInto('status=?', $status);
-            $where[]  = $wa->quoteInto('status=?', "new");
-            $where[]  = $wa->quoteInto('invoice_id =?', $invoice_id);
+            $fields["status"]  = $status;
+            $where[]   = $wa->quoteInto("invoice_id = ?", $invoice_id);
+            $where[]   = $wa->quoteInto("`status` = ?" , 'new');
             $tableName = $this->getTable("bitcoin/ipn");
-            $wa->update($tableName, $fields ,$where);
+            $wa->update($tableName, $fields, $where);
             $wa->commit();
             return true;
         } catch (Exception $exc) {
@@ -57,4 +60,5 @@ class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abst
             return $exc->getMessage();
         }
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * The MIT License (MIT)
@@ -23,8 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- **/
-
+ * */
 Class Yellow_Bitcoin_Model_Ipn extends Mage_Core_Model_Abstract {
 
     public function _construct() {
@@ -52,42 +52,6 @@ Class Yellow_Bitcoin_Model_Ipn extends Mage_Core_Model_Abstract {
         $this->setExpirationTime($invoice["expiration_time"]);
         $this->setHash($invoice["hash"]);
         return $this->save();
-    }
-
-    /**
-     * @param string $quoteId
-     * @param array  $statuses
-     *
-     * @return boolean
-     */
-    public function GetStatusReceived($quoteId, $statuses) {
-        if (!$quoteId) {
-            return false;
-        }
-        $quote = Mage::getModel('sales/quote')->load($quoteId, 'entity_id');
-        if (!$quote) {
-            Mage::log('quote not found', Zend_Log::WARN, 'yellow.log');
-            return false;
-        }
-        return false;
-    }
-
-    /**
-     * @param string $quoteId
-     *
-     * @return boolean
-     */
-    public function GetQuotePaid($quoteId) {
-        return $this->GetStatusReceived($quoteId, array('paid', 'confirmed', 'complete'));
-    }
-
-    /**
-     * @param string $quoteId
-     *
-     * @return boolean
-     */
-    public function GetQuoteComplete($quoteId) {
-        return $this->GetStatusReceived($quoteId, array('confirmed', 'complete'));
     }
 
 }
