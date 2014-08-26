@@ -58,21 +58,44 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
 
     /**
      * Cash On Delivery payment block paths
-     *
      * @var string
      */
     protected $_formBlockType = 'bitcoin/form_bitcoin';
-    //protected $_infoBlockType = 'bitcoin/info_bitcoin';
+    
+    /**
+     * Server Root for Yellow API 
+     * @var String
+     */
     private $server_root = "https://yolanda-perkins-stage.herokuapp.com/";
+    
+    /**
+     * create invoice URI 
+     * @var String 
+     */
     private $api_uri_create_invoice = "api/invoice/";
+    
+    /**
+     * check invoice status URI
+     * @var String 
+     */
     private $api_uri_check_payment = "api/invoice/[id]/";
+    
+    /**
+     * @type Mage_Sales_Model_Order
+     **/
     private $order;
-
+    
+    /**
+     * Check whether payment method can be used
+     *
+     * @param Mage_Sales_Model_Quote|null $quote
+     *
+     * @return bool
+     */
     public function isAvailable($quote = null) {
         parent::isAvailable($quote);
         $quoteCurrency = $quote->getData("quote_currency_code");
-        $currencies = Mage::getStoreConfig('payment/bitcoin/currencies');
-        $currencies = array_map('trim', explode(',', $currencies));
+        $currencies = array_map('trim', explode(',', Mage::getStoreConfig('payment/bitcoin/currencies')));
         return array_search($quoteCurrency, $currencies) !== false;
     }
 
@@ -86,7 +109,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     }
 
     /**
-     * @return boolean
+     * can be used in regular checkout
+     * 
+     * @return bool
      */
     public function canUseCheckout() {
         if (!$this->isApiKeyConfigured()) {
@@ -105,7 +130,15 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $private_key = Mage::getStoreConfig('payment/bitcoin/private_key');
         return (!empty($private_key) && !empty($public_key));
     }
-
+    
+    /**
+     * Authorize payment abstract method
+     *
+     * @param Varien_Object $payment
+     * @param float $amount
+     *
+     * @return Mage_Payment_Model_Abstract | direct redirect to Yellow fullscreen payment page
+     */
     public function authorize(Varien_Object $payment, $amount) {
         if (!Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
             return $this->CheckForPayment($payment);
@@ -115,6 +148,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     }
 
     /**
+     * 
+     * create a yellow invoice
+     * 
      * @param $payment
      * @param $amount
      *
@@ -174,38 +210,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
         return $this;
     }
-
     /**
-     * computes a unique hash determined by the contents of the cart
-     *
-     * @param string $quoteId
-     *
-     * @return boolean|string
+     * read the invoice url from session and redirect to it 
+     * 
+     * @return string
      */
-    public function getQuoteHash($quoteId) {
-        $quote = Mage::getModel('sales/quote')->load($quoteId, 'entity_id');
-        if (!$quote) {
-            Mage::log('getQuoteTimestamp: quote not found', Zend_Log::ERR, 'yellow.log');
-
-            return false;
-        }
-
-        // encode items
-        $items = $quote->getAllItems();
-        $latest = NULL;
-        $description = '';
-
-        foreach ($items as $i) {
-            $description.= 'i' . $i->getItemId() . 'q' . $i->getQty();
-            // could encode $i->getOptions() here but item ids are incremented if options are changed
-        }
-
-        $hash = base64_encode(hash_hmac('sha256', $description, $quoteId));
-        $hash = substr($hash, 0, 30); // fit it in posData maxlen
-
-        return $hash;
-    }
-
     public function getOrderPlaceRedirectUrl() {
         if (Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
             $invoice = Mage::getSingleton('core/session')->getData("invoice");
@@ -214,7 +223,12 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             return '';
         }
     }
-
+    /**
+     * 
+     * @param Mage_Sales_Model_Quote $quote
+     * @param boolean $redirect
+     * @return boolean
+     */
     public function createInvoice($quote, $redirect = true) {
         if (get_class($quote) == "Mage_Sales_Model_Quote") {
             $array_key = "quoteId";
@@ -286,7 +300,13 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             return false;
         }
     }
-
+    /**
+     * check yellow invoice status over Yellow API
+     * 
+     * @param integer $id
+     * @return boolean
+     * 
+     */
     public function checkInvoice($id) {
         $url = $this->server_root . str_replace("[id]", $id, $this->api_uri_check_payment);
         $nonce = round(microtime(true) * 1000);
@@ -307,7 +327,15 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
         return false;
     }
-
+    
+    /**
+     * check yellow invoice status over Yellow API
+     * 
+     * @param integer $id
+     * @return boolean
+     * 
+     */
+    
     public function checkInvoiceStatus($id) {
         $data = $this->checkInvoice($id);
         if (!is_array($data)) {
@@ -338,23 +366,19 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         return false;
     }
 
-    public function getOrderInformations() {
-        $order = $this->getOrder();
-        $data = array(
-            'base_amount' => $this->round($order->getData('base_grand_total')),
-            'base_currency' => Mage::app()->getStore()->getBaseCurrencyCode(),
-            'customer_amount' => $this->round($order->getData("grand_total")),
-            'customer_currency' => $order->getData("order_currency_code"),
-            'orderid' => $order->getData("increment_id")
-        );
-        Mage::getSingleton('core/session')->setData('order_details', $data);
-        return $data;
-    }
-
+    /**
+     * 
+     * @param Mage_Sales_Model_Order $order
+     */
     public function setOrder($order) {
         $this->order = $order;
     }
-
+    
+    /**
+     * 
+     * @return Mage_Sales_Model_Order
+     * @throws \Exception
+     */
     public function getOrder() {
         if (!$this->order) {
             $session = Mage::getSingleton('checkout/session');
@@ -366,26 +390,31 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
         return $this->order;
     }
-
-    public function clearCart() {
-        $cartHelper = Mage::helper('checkout/cart');
-        $items = $cartHelper->getCart()->getItems();
-
-        foreach ($items as $item) {
-            $itemId = $item->getItemId();
-            $cartHelper->getCart()->removeItem($itemId);
-        }
-        $cartHelper->getCart()->save();
-    }
-
+    /**
+     * read from magento configuration
+     * 
+     * @param string $param
+     * @return type
+     */
     private function getConfiguration($param) {
         return $this->getConfigData($param);
     }
-
+    /**
+     * get HTTP client 
+     * 
+     * @return \Yellow_Bitcoin_Model_Http
+     */
     private function getHTTPClient() {
         return new Yellow_Bitcoin_Model_Http();
     }
-
+    
+    /**
+     * prepare HTTP Headers
+     * 
+     * @param String $nonce
+     * @param String$signature
+     * @return string
+     */
     private function getHeaders($nonce, $signature) {
         $headers = array(
             "Content-type:application/json",
@@ -395,22 +424,33 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         );
         return $headers;
     }
-
+    
+    /**
+     * returns success status 
+     * 
+     * @return String 
+     */
     public function getSuccessStatus() {
         return Mage_Sales_Model_Order::STATE_PROCESSING;
     }
-
+    
+    /**
+     * returns failed status 
+     * 
+     * @return String 
+     */
     public function getFailedStatus() {
         return Mage_Sales_Model_Order::STATE_CANCELED;
     }
-
+    
+    /**
+     * log message to file 
+     * 
+     * @param string $message
+     * @return boolean
+     */
     private function log($message) {
         Mage::log($message, Zend_Log::ERR, "yellow.log");
         return true;
     }
-
-    private function round($amount) {
-        return round($amount, 2, PHP_ROUND_HALF_EVEN);
-    }
-
 }
