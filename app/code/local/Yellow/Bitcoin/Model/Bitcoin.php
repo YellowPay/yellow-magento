@@ -122,9 +122,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      */
     public function CreateInvoiceAndRedirect($payment) {
         $order = $payment->getOrder();
-        $orderId = $order->getIncrementId();
         $this->createInvoice($order);
         $payment->setIsTransactionPending(true); // status will be PAYMENT_REVIEW instead of PROCESSING
+        //$orderId = $order->getIncrementId();
         //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
         return $this;
     }

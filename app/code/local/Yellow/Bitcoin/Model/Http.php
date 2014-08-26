@@ -32,7 +32,7 @@ Class Yellow_Bitcoin_Model_Http  extends Varien_Http_Client{
      * right now i am using php's default values 
      */
     protected $_allowedParams = array(
-        'timeout' => 10,
+        'timeout' => 10, /// this might need to convert to configuration later once needed
         'maxredirects' => CURLOPT_MAXREDIRS,
         'proxy' => CURLOPT_PROXY,
         'ssl_cert' => CURLOPT_SSLCERT,

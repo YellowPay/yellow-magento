@@ -26,9 +26,11 @@ if ($iframe):
           alert("Received message from unexpected domain: " + event.origin);
           return;
         }
-        if (event.data == "unconfirmed") {
+        if (event.data === "unconfirmed") {
             buttons = $$("button.btn-checkout");
             buttons.each(function(btn) { btn.click(); })
+         }else{
+             alert("unknown order status :" + event.data);
          }
       }
       // Attach the message listener
