@@ -28,6 +28,9 @@
 class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
 
     public function IpnAction() {
+        try{
+
+
         /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */
         $this->log("-----------start an IPN request proccessing ------------");
         if ($this->getRequest()->isPost()) {
@@ -79,10 +82,10 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $order->sendNewOrderEmail();
                     $order->save();
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($body["id"]);
-                    /* create an invoice */
-                    $invoice_id = Mage::getModel('sales/order_invoice_api')->create($order->getIncrementId(), array());
-                    $order->getPayment()->captureInvoice($invoice_id);
-                    
+                     /* create an invoice */
+                    $invoiceModel = Mage::getModel('sales/order_invoice_api');
+                    $invoice_id = $invoiceModel->create($order->getIncrementId(), array());
+                    $invoiceModel->capture($invoice_id);
                     $this->log("Magento Invoice created !");
                     break;
                 case 'reissue':
@@ -118,7 +121,10 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
         } else {
             return $this->_forward("no-route");
         }
-        $this->log("----------- finished an IPN request ---------------------------------");
+        $this->log("----------- finished an IPN request proccessing ---------------------");
+        } catch (\Exception $e){
+            $this->log( "EXCEPTION:". $e->getMessage . "|" . $e->getLine());
+        }
     }
 
     public function StatusAction() {

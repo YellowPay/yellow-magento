@@ -208,8 +208,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 /* end invoice the order */
                 break;
             case "paid":
-                $invoice_id = Mage::getModel('sales/order_invoice_api')->create($payment->getOrder()->getIncrementId(), array());
-                $this->captureInvoice($invoice_id);
+                $invoiceModel = Mage::getModel('sales/order_invoice_api');
+                $invoice_id = $invoiceModel->create($payment->getOrder()->getIncrementId(), array());
+                $invoiceModel->capture($invoice_id);
                 break;
         }
         return $this;
@@ -352,6 +353,10 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             $order->sendNewOrderEmail();
             $order->save();
             Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
+            /* create an invoice */
+            $invoiceModel = Mage::getModel('sales/order_invoice_api');
+            $invoice_id = $invoiceModel->create($order->getIncrementId(), array());
+            $invoiceModel->capture($invoice_id);
             return $data["status"];
         }
         
