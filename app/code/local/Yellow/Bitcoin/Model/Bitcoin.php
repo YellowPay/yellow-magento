@@ -253,7 +253,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         }
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
-            "base_price" => 0.10, ///$base_price,
+            "base_price" => 0.30, ///$base_price,
             "base_ccy" => $base_ccy,
             "callback" => $ipnUrl,
             "redirect" => $redirectUrl

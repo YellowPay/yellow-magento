@@ -29,99 +29,103 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
 
     public function IpnAction() {
         try{
-
-
-        /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */
-        $this->log("-----------start an IPN request proccessing ------------");
-        if ($this->getRequest()->isPost()) {
-            $id = base64_decode($this->getRequest()->getParam("id"));
-            $data = file_get_contents('php://input');
-            $body = json_decode($data, true);
-            $this->log("Id is :{$id}");
-            $this->log("I had recived this data :" . $data);
-            $url = $body["url"];
-            /* simple valdation check | might be changed later */
-            $collection = Mage::getModel("bitcoin/ipn")
-                    ->getCollection()
-                    ->getSelect()
-                    ->where("quote_id = ? OR order_id = ?", $id)
-                    ->where("url =?", $url);
-            $yellow_log = $collection->query()->fetchAll();
-            $from_order = $from_quote = false;
-            if (count($yellow_log) == 1) {
-                if ($yellow_log[0]["quote_id"] === $id) {
-                    $from_quote = true;
-                    $from_order = false;
-                    $this->log("its a quote");
-                } elseif ($yellow_log[0]["order_id"] === $id) {
-                    $from_quote = false;
-                    $from_order = true;
-                    $this->log("its an order");
+            /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */
+            $this->log("-----------start an IPN request proccessing ------------");
+            if ($this->getRequest()->isPost()) {
+                $id = base64_decode($this->getRequest()->getParam("id"));
+                $data = file_get_contents('php://input');
+                $body = json_decode($data, true);
+                $this->log("Id is :{$id}");
+                $this->log("I had recived this data :" . $data);
+                $url = $body["url"];
+                /* simple valdation check | might be changed later */
+                $collection = Mage::getModel("bitcoin/ipn")
+                        ->getCollection()
+                        ->getSelect()
+                        ->where("quote_id = ? OR order_id = ?", $id)
+                        ->where("url =?", $url);
+                $yellow_log = $collection->query()->fetchAll();
+                $from_order = $from_quote = false;
+                if (count($yellow_log) == 1) {
+                    if ($yellow_log[0]["quote_id"] === $id) {
+                        $from_quote = true;
+                        $from_order = false;
+                        $this->log("its a quote");
+                    } elseif ($yellow_log[0]["order_id"] === $id) {
+                        $from_quote = false;
+                        $from_order = true;
+                        $this->log("its an order");
+                    }
+                } else {
+                    $this->log("the validation has failed , url : {$url}");
+                    return $this->_forward("no-route");
                 }
+                if ($from_order) {
+                    $order = Mage::getModel('sales/order')->load($id);
+                }
+                if ($from_quote) {
+                    $order = Mage::getModel('sales/order')->load($id, "quote_id");
+                }
+                /* skip quote + unconfirmed state because the order hasn't been placed yet */
+                if($from_quote && $body["status"] === "unconfirmed"){
+                    $this->log(" quote id : {$id} is skipped because the order hasn't placed yet , IPN status {$body["status"]}");
+                    echo json_encode(array("message" => "skipped"));
+                    return ;
+                }
+                if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
+                    $this->log("either this order is not paid via Yellow , or it had unallowed state ");
+                    return $this->_forward("no-route");
+                }
+                $this->log(" invoice status :  {$body["status"]}");
+                switch ($body['status']) {
+                    case 'paid':
+                        $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
+                        $status_message = " client paid "; // $invoice["message"];
+                        $order->addStatusToHistory($status, $status_message);
+                        $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
+                        $order->sendNewOrderEmail();
+                        $order->save();
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($body["id"]);
+                         /* create an invoice */
+                        $invoiceModel = Mage::getModel('sales/order_invoice_api');
+                        $invoice_id = $invoiceModel->create($order->getIncrementId(), array());
+                        $invoiceModel->capture($invoice_id);
+                        $this->log("Magento Invoice created !");
+                        break;
+                    case 'reissue':
+                        $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had reissue / renew payment ready
+                        $status_message = " client has re issued the invoice "; // $invoice["message"];
+                        $order->addStatusToHistory($status, $status_message);
+                        $order->save();
+                        break;
+                    case 'partial':
+                        $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had partail payment ready
+                        $status_message = " client paid but payment is unconfirmed / partial :"; // $invoice["message"];
+                        $order->addStatusToHistory($status, $status_message);
+                        $order->save();
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
+                        break;
+                    case 'failed':
+                    case 'invalid':
+                        $status = Mage::getModel("bitcoin/bitcoin")->getFailedStatus();
+                        $status_message = " client failed to pay :"; // $invoice["message"];
+                        $order->addStatusToHistory($status, $status_message);
+                        $order->setState(Mage_Sales_Model_Order::STATE_HOLDED);
+                        $order->cancel();
+                        $order->save();
+                        break;
+                    /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
+                    case 'unconfirmed':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($body["id"]);
+                    case 'new':
+                    default:
+                        break;
+                }
+                echo json_encode(array("message" => "done"));
             } else {
-                $this->log("the validation has failed , url : {$url}");
                 return $this->_forward("no-route");
             }
-            if ($from_order) {
-                $order = Mage::getModel('sales/order')->load($id);
-            }
-            if ($from_quote) {
-                $order = Mage::getModel('sales/order')->load($id, "quote_id");
-            }
-            if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
-                $this->log("either this order is not paid via Yellow , or it had unallowed state ");
-                return $this->_forward("no-route");
-            }
-            $this->log(" invoice status :  {$body["status"]}");
-            switch ($body['status']) {
-                case 'paid':
-                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
-                    $status_message = " client paid "; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
-                    $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
-                    $order->sendNewOrderEmail();
-                    $order->save();
-                    Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($body["id"]);
-                     /* create an invoice */
-                    $invoiceModel = Mage::getModel('sales/order_invoice_api');
-                    $invoice_id = $invoiceModel->create($order->getIncrementId(), array());
-                    $invoiceModel->capture($invoice_id);
-                    $this->log("Magento Invoice created !");
-                    break;
-                case 'reissue':
-                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had reissue / renew payment ready
-                    $status_message = " client has re issued the invoice "; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
-                    $order->save();
-                    break;
-                case 'partial':
-                    $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had partail payment ready
-                    $status_message = " client paid but payment is unconfirmed / partial :"; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
-                    $order->save();
-                    Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
-                    break;
-                case 'failed':
-                case 'invalid':
-                    $status = Mage::getModel("bitcoin/bitcoin")->getFailedStatus();
-                    $status_message = " client failed to pay :"; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
-                    $order->setState(Mage_Sales_Model_Order::STATE_HOLDED);
-                    $order->cancel();
-                    $order->save();
-                    break;
-                /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
-                case 'unconfirmed':
-                    Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($body["id"]);
-                case 'new':
-                default:
-                    break;
-            }
-            echo json_encode(array("message" => "done"));
-        } else {
-            return $this->_forward("no-route");
-        }
-        $this->log("----------- finished an IPN request proccessing ---------------------");
+            $this->log("----------- finished an IPN request proccessing ---------------------");
         } catch (\Exception $e){
             $this->log( "EXCEPTION:". $e->getMessage . "|" . $e->getLine());
         }
