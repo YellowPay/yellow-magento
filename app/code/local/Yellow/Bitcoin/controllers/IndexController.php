@@ -80,7 +80,9 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $order->save();
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($body["id"]);
                     /* create an invoice */
-                    Mage::getModel('sales/order_invoice_api')->create($order->getIncrementId(), array());
+                    $invoice_id = Mage::getModel('sales/order_invoice_api')->create($order->getIncrementId(), array());
+                    $order->getPayment()->captureInvoice($invoice_id);
+                    
                     $this->log("Magento Invoice created !");
                     break;
                 case 'reissue':
@@ -126,10 +128,15 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
             $model = Mage::getModel('bitcoin/bitcoin');
             $order = $this->getOrder();
             if (!$order) {
+                $this->log("this session doesn't has a recent order , maybe he/she is accessing this page directly");
                 return $this->_forward("no-route");
             }
             $model->setOrder($order);
             $status = $model->checkInvoiceStatus($id);
+            if($status == false){
+               $this->log("failed to check invoice status");
+               return $this->_forward("no-route");
+            }
             switch ($status) {
                 case "paid":
                 case "partial":

@@ -50,7 +50,6 @@ class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abst
             $wa->beginTransaction();
             $fields["status"]  = $status;
             $where[]   = $wa->quoteInto("invoice_id = ?", $invoice_id);
-            $where[]   = $wa->quoteInto("`status` = ?" , 'new');
             $tableName = $this->getTable("bitcoin/ipn");
             $wa->update($tableName, $fields, $where);
             $wa->commit();

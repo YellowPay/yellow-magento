@@ -173,7 +173,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function CheckForPayment($payment) {
         $quoteId = $payment->getOrder()->getQuoteId();
         $ipn = Mage::getModel('bitcoin/ipn');
-        $invoice = Mage::getSingleton('core/session')->getData("invoice");
+            $invoice = Mage::getSingleton('core/session')->getData("invoice");
         $invoice_status = $this->checkInvoice($invoice["id"]);
         switch ($invoice_status["status"]) {
             case "new":
@@ -207,6 +207,10 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 }*/
                 /* end invoice the order */
                 break;
+            case "paid":
+                $invoice_id = Mage::getModel('sales/order_invoice_api')->create($payment->getOrder()->getIncrementId(), array());
+                $this->captureInvoice($invoice_id);
+                break;
         }
         return $this;
     }
@@ -230,6 +234,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      * @return boolean
      */
     public function createInvoice($quote, $redirect = true) {
+        $this->clearSessionData();
         if (get_class($quote) == "Mage_Sales_Model_Quote") {
             $array_key = "quoteId";
             $currency_code_key = "quote_currency_code";
@@ -444,7 +449,27 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function getFailedStatus() {
         return Mage_Sales_Model_Order::STATE_CANCELED;
     }
-    
+    /**
+     * 
+     * @param string $invoiceIncrementId
+     * @return boolean
+     */
+    public function captureInvoice($invoiceIncrementId){
+        return Mage::getModel("sales/order_invoice_api")->capture($invoiceIncrementId);
+    }
+
+    /**
+     *
+     * clear session data 
+     *
+     * @return boolean 
+     */
+    public function clearSessionData(){
+        Mage::getSingleton('core/session')->unsetData("invoice");
+        Mage::getSingleton('core/session')->unsetData("has_invoice");
+        Mage::getSingleton('core/session')->unsetData("check_invoice");
+        return true;
+    }    
     /**
      * log message to file 
      * 
