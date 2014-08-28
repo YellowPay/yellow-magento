@@ -58,6 +58,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     }
                 } else {
                     $this->log("the validation has failed , url : {$url}");
+                    $this->log("----------- skipped the IPN request proccessing ---------------------");
                     return $this->_forward("no-route");
                 }
                 if ($from_order) {
@@ -70,17 +71,19 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                 if($from_quote && $body["status"] === "unconfirmed"){
                     $this->log(" quote id : {$id} is skipped because the order hasn't placed yet , IPN status {$body["status"]}");
                     echo json_encode(array("message" => "skipped"));
+                    $this->log("----------- skipped the IPN request proccessing ---------------------");
                     return ;
                 }
                 if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
                     $this->log("either this order is not paid via Yellow , or it had unallowed state ");
+                    $this->log("----------- skipped the IPN request proccessing ---------------------");
                     return $this->_forward("no-route");
                 }
                 $this->log(" invoice status :  {$body["status"]}");
                 switch ($body['status']) {
                     case 'paid':
                         $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
-                        $status_message = " client paid "; // $invoice["message"];
+                        $status_message = "Payment confirmation received "; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                         $order->sendNewOrderEmail();
