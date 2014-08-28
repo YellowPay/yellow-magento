@@ -158,11 +158,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      */
     public function CreateInvoiceAndRedirect($payment) {
         $order = $payment->getOrder();
-        $this->createInvoice($order);
-        $payment->setIsTransactionPending(true); // status will be PAYMENT_REVIEW instead of PROCESSING
-        //$orderId = $order->getIncrementId();
-        //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
-        return $this;
+        if(is_array($this->createInvoice($order))){
+            $payment->setIsTransactionPending(true); // status will be PAYMENT_REVIEW instead of PROCESSING
+            //$orderId = $order->getIncrementId();
+            //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
+            return $this;
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -173,8 +176,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function CheckForPayment($payment) {
         $quoteId = $payment->getOrder()->getQuoteId();
         $ipn = Mage::getModel('bitcoin/ipn');
-            $invoice = Mage::getSingleton('core/session')->getData("invoice");
+        $invoice = Mage::getSingleton('core/session')->getData("invoice");
         $invoice_status = $this->checkInvoice($invoice["id"]);
+        if(!is_array($invoice_status)){
+            return false;
+        }
         switch ($invoice_status["status"]) {
             case "new":
                 // This is the error that is displayed to the customer during checkout.
@@ -321,8 +327,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $hash = hash_hmac("sha256", $message, $private_key, false);
         $http_client = $this->getHTTPClient();
         $http_client->setHeaders($this->getHeaders($nonce, $hash));
-        $http_client->setMethod("GET")
-                ->setUri($url);
+        $http_client->setMethod("GET")->setUri($url);
         try {
             $body = $http_client->request()->getBody();
             $data = json_decode($body, true);
