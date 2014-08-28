@@ -102,10 +102,10 @@ SOFTWARE.
             <bitcoin>
                 <active>1</active>
                 <model>bitcoin/bitcoin</model>
-                <order_status>pending</order_status>
-                <title>Yellow Bitcoin</title>
+                <!--<order_status>pending</order_status>-->
+                <title>Pay with Bitcoin (powered by Yellow)</title>
                 <fullscreen>0</fullscreen>
-                <instructions>Pay  through your Bitcoin  - Yellow</instructions>
+                <!--<instructions>Pay With Bitcoin</instructions>-->
                 <allowspecific>0</allowspecific>
                 <currencies>USD,AED</currencies>
                 <public_key>wJn25r8RwJn25r8R</public_key>

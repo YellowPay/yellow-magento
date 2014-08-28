@@ -32,7 +32,12 @@ SOFTWARE.
                 <bitcoin>
                     <label>Yellow Bitcoin</label>
                     <comment>
-                        <![CDATA[This extension by <a href="http://www.yellowpay.co/" title="Applications for Ecommerce" style="color: #EA7601">Yellow</a> | <a href="http://yellowpay.co" title="Get support for this extension" style="color: #EA7601">Get Support</a>]]>
+                        <![CDATA[ 
+                        <div>
+                            <img src="https://avatars2.githubusercontent.com/u/8528793?v=2&s=100" alt= "YellowPay" width='100px' height='100px'/>
+                            <p>This extension by <a href="http://www.yellowpay.co/" title="Applications for Ecommerce" style="color: #EA7601">Yellow</a> | <a href="http://yellowpay.co" title="Get support for this extension" style="color: #EA7601">Get Support</a></p>
+                        </div>
+                        ]]>
                     </comment>
                     <sort_order>1</sort_order>
                     <show_in_default>1</show_in_default>
@@ -46,7 +51,7 @@ SOFTWARE.
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                         </active>
-                        <title translate="label">
+                        <!--<title translate="label">
                             <label>Title</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>3</sort_order>
@@ -62,7 +67,7 @@ SOFTWARE.
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </instructions>
+                        </instructions> 
                         <order_status translate="label">
                             <label>New order status</label>
                             <frontend_type>select</frontend_type>
@@ -71,7 +76,7 @@ SOFTWARE.
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </order_status>
+                        </order_status>-->
                         <allowspecific translate="label">
                             <label>Payment Applicable From</label>
                             <frontend_type>select</frontend_type>
