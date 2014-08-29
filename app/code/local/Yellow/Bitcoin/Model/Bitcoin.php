@@ -383,7 +383,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         
         if ($data["status"] === "failed") {
             $order = $this->getOrder();
-            $order->addStatusToHistory($this->getFailedStatus(), "client failed to pay", true);
+            $order->addStatusToHistory($this->getFailedStatus(), "client failed to pay , invoice Id : {$data["id"]} ", true);
             $order->cancel();
             $order->save();
             return $data["status"];
