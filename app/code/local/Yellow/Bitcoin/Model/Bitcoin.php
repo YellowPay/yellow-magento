@@ -141,7 +141,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      */
     public function authorize(Varien_Object $payment, $amount) {
         if (!Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
-            return $this->CheckForPayment($payment);
+            $data = $this->CheckForPayment($payment);
+            if(!$data){
+                Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+            }
+            return $data;
         } else {
             return $this->CreateInvoiceAndRedirect($payment);
         }
@@ -164,7 +168,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
             return $this;
         }else{
-            return false;
+            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
         }
     }
 
@@ -179,7 +183,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $invoice = Mage::getSingleton('core/session')->getData("invoice");
         $invoice_status = $this->checkInvoice($invoice["id"]);
         if(!is_array($invoice_status)){
-            return false;
+            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
         }
         switch ($invoice_status["status"]) {
             case "new":
@@ -217,6 +221,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 $invoiceModel = Mage::getModel('sales/order_invoice_api');
                 $invoice_id = $invoiceModel->create($payment->getOrder()->getIncrementId(), array());
                 $invoiceModel->capture($invoice_id);
+                break;
+            default :
+                Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
                 break;
         }
         return $this;
@@ -260,7 +267,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
             "base_price" => 0.30, ///$base_price,
-            "base_ccy" => $base_ccy,
+            "base_ccy" => "USD",  ///$base_ccy,
             "callback" => $ipnUrl,
             "redirect" => $redirectUrl
         );
@@ -302,14 +309,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 Mage::getSingleton('core/session')->setData('has_invoice', true);
                 return $data;
             } else {
-                Mage::getSingleton('core/session')->setData('error', "There has been an error during invoice creation  , please refresh the page");
+                Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
                 $this->log("I had seen an error code {$response->getStatus()}");
                 $this->log("response body was :" . json_encode($response->getBody));
                 return false;
             }
         } catch (Exception $exc) {
             $this->log($exc->getMessage());
-            return false;
+            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"  . $exc->getMessage()));
         }
     }
     /**
@@ -335,6 +342,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             return $data;
         } catch (Exception $exc) {
             $this->log($exc->getMessage());
+            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again . " . $exc->getMessage() ));
         }
         return false;
     }
@@ -350,11 +358,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function checkInvoiceStatus($id) {
         $data = $this->checkInvoice($id);
         if (!is_array($data)) {
-            return false;
+            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
         }
         if ($data["status"] == "paid") {
             $order = $this->getOrder();
-            $order->addStatusToHistory($this->getSuccessStatus(), "client paid successfully , payment status :" . $data["status"], true);
+            $order->addStatusToHistory($this->getSuccessStatus(), "Payment confirmed , invoice Id " . $data["id"], true);
             $order->sendNewOrderEmail();
             $order->save();
             Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
