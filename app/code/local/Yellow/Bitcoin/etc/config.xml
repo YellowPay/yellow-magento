@@ -27,7 +27,7 @@ SOFTWARE.
 <config>
     <modules>
         <Yellow_Bitcoin>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
             <depends>
                 <Mage_Payment />
             </depends>
@@ -108,8 +108,8 @@ SOFTWARE.
                 <!--<instructions>Pay With Bitcoin</instructions>-->
                 <allowspecific>0</allowspecific>
                 <currencies>USD,AED</currencies>
-                <public_key>wJn25r8RwJn25r8R</public_key>
-                <private_key>wJn25r8RwJn25r8R</private_key>
+                <public_key></public_key>
+                <private_key></private_key>
                 <payment_action>authorize</payment_action>
             </bitcoin>
         </payment>
