@@ -165,7 +165,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
             return $this;
         }else{
-            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+            Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
         }
     }
 
@@ -182,7 +182,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $invoice = Mage::getSingleton('core/session')->getData("invoice");
         $invoice_status = $this->checkInvoice($invoice["id"]);
         if(!is_array($invoice_status)){
-            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+            Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
         }
         switch ($invoice_status["status"]) {
             case "new":
@@ -222,7 +222,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 $invoiceModel->capture($invoice_id);
                 break;
             default :
-                Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+                Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
                 break;
         }
         return $this;
@@ -308,14 +308,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 Mage::getSingleton('core/session')->setData('has_invoice', true);
                 return $data;
             } else {
-                Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+                Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
                 $this->log("I had seen an error code {$response->getStatus()}");
                 $this->log("response body was :" . json_encode($response->getBody));
                 return false;
             }
         } catch (Exception $exc) {
             $this->log($exc->getMessage());
-            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again "  . $exc->getMessage()));
+            Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co "  . $exc->getMessage()));
         }
     }
     /**
@@ -341,7 +341,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             return $data;
         } catch (Exception $exc) {
             $this->log($exc->getMessage());
-            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again   " . $exc->getMessage() ));
+            Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co   " . $exc->getMessage() ));
         }
         return false;
     }
@@ -357,7 +357,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     public function checkInvoiceStatus($id) {
         $data = $this->checkInvoice($id);
         if (!is_array($data)) {
-            Mage::throwException(Mage::helper('bitcoin')->__("an internal error happened during fulfilling your request , please refresh your page and try again"));
+            Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
         }
         if ($data["status"] == "paid") {
             $order = $this->getOrder();
