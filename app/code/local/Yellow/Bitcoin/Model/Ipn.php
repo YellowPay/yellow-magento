@@ -37,6 +37,8 @@ Class Yellow_Bitcoin_Model_Ipn extends Mage_Core_Model_Abstract {
      * 
      */
     public function saveInvoice($invoice) {
+        $timezone = Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE);
+        $now = new \DateTime("now",new \DateTimeZone($timezone));
         $this->setQuoteId(isset($invoice['quoteId']) ? $invoice['quoteId'] : NULL);
         $this->setOrderId(isset($invoice['orderId']) ? $invoice['orderId'] : NULL);
         $this->setInvoiceId($invoice['invoice_id']);
@@ -50,6 +52,8 @@ Class Yellow_Bitcoin_Model_Ipn extends Mage_Core_Model_Abstract {
         $this->setBaseCcy($invoice["base_ccy"]);
         $this->setServerTime($invoice["server_time"]);
         $this->setExpirationTime($invoice["expiration_time"]);
+        $this->setCreatedAt($now->format("Y-m-d H:i:s"));
+        $this->setUpdatedAt($now->format("Y-m-d H:i:s"));
         $this->setHash($invoice["hash"]);
         return $this->save();
     }

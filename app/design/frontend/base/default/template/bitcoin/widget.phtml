@@ -15,23 +15,27 @@ switch ($url) {
         $iframe = '<iframe src="' . $url . '" style="width:500px; height:215px; overflow:hidden; border:none; margin:auto; display:block;" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
         break;
 }
-if ($iframe):
-    echo $iframe;
-    $quoteId = $this->GetQuoteId();
-    $url = Mage::getUrl('bitcoin/index/ipn/');
-    ?>
+if ($iframe): echo $iframe;?>
 <script type="text/javascript">
      function invoiceListener(event) {
         if (event.origin != "https://yolanda-perkins-stage.herokuapp.com") {
           alert("Received message from unexpected domain: " + event.origin);
           return;
         }
-        if (event.data === "unconfirmed") {
-            buttons = $$("button.btn-checkout");
-            buttons.each(function(btn) { btn.click(); })
-         }else{
-             alert("unknown order status :" + event.data);
-         }
+        switch (event.data){
+            case "unconfirmed":
+                buttons = $$("button.btn-checkout");
+                buttons.each(function(btn) { btn.click(); })
+                break;
+            case "expired":
+                <?php Mage::getSingleton('customer/session')->addError($this->__('your invoice has expired , feel free to place the checkout again'));?>
+                <?php $carturl = Mage::getUrl('checkout/cart');?>
+                window.location = "<?=$carturl;?>"
+                break;
+            default:
+                alert("unknown order status :" + event.data);
+                break;
+        }
       }
       // Attach the message listener
       if (window.addEventListener) {

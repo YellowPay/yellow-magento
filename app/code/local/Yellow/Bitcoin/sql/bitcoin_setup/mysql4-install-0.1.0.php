@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS `{$installer->getTable('bitcoin/ipn')}` (
   `base_ccy` varchar(10) NOT NULL,
   `server_time` datetime NOT NULL,
   `expiration_time` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
   `hash` varchar(400) NOT NULL ,
   PRIMARY KEY  (`id`),
   KEY `quote_id` (`quote_id`),

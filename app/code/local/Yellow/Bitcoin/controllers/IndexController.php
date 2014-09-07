@@ -120,6 +120,23 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
                     case 'unconfirmed':
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($body["id"]);
+                        break;
+                    case 'expired':
+                        /* this to update the ipn table when invoice expired  */
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($body["id"]);
+                        break;
+                    case 'underpaid':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsUnderPaid($body["id"]);
+                        break;
+                    case 'overpaid':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsOverPaid($body["id"]);
+                        break;
+                    case 'refund_requested':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($body["id"]);
+                        break;
+                    case 'refund_paid':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundPaid($body["id"]);
+                        break;
                     case 'new':
                     default:
                         break;

@@ -43,12 +43,37 @@ class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abst
         return $this->updatePayment($invoice_id, "partial");
     }
 
+    public function MarkAsExpired($invoice_id) {
+        return $this->updatePayment($invoice_id, "expired");
+    }
+
+    public function MarkAsUnderPaid($invoice_id) {
+        return $this->updatePayment($invoice_id, "underpaid");
+    }
+
+    public function MarkAsOverPaid($invoice_id) {
+        return $this->updatePayment($invoice_id, "overpaid");
+    }
+
+    public function MarkAsRefundPaid($invoice_id) {
+        return $this->updatePayment($invoice_id, "refund_paid");
+    }
+
+    public function MarkAsRefundRequested($invoice_id) {
+        return $this->updatePayment($invoice_id, "refund_requested");
+    }
+
+
+
     private function updatePayment($invoice_id, $status) {
         $wa = $this->_getWriteAdapter();
         try {
+            $timezone = Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE);
+            $now = new \DateTime("now",new \DateTimeZone($timezone));
             $where = array();
             $wa->beginTransaction();
             $fields["status"]  = $status;
+            $fields["updated_at"] = $now->format("Y-m-d H:i:s");
             $where[]   = $wa->quoteInto("invoice_id = ?", $invoice_id);
             $tableName = $this->getTable("bitcoin/ipn");
             $wa->update($tableName, $fields, $where);

@@ -175,7 +175,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      * @return Yellow_Bitcoin_Model_Bitcoin
      */
     public function CheckForPayment($payment) {
-        $quoteId = $payment->getOrder()->getQuoteId();
+        $order   = $payment->getOrder();
+        $order->setCanSendNewEmailFlag(false);
+        $quoteId = $order->getQuoteId();
         $ipn = Mage::getModel('bitcoin/ipn');
         $invoice = Mage::getSingleton('core/session')->getData("invoice");
         $invoice_status = $this->checkInvoice($invoice["id"]);
