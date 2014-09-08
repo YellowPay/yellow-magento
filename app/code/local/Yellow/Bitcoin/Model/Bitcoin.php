@@ -197,8 +197,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 Mage::log('Order is partialy paid  for.  we don\'t support partial payment yet.', Zend_Log::CRIT, 'yellow.log');
                 break;
 
-            case "unconfirmed":
-                Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($invoice["id"]);
+            case "authorizing":
+                Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($invoice["id"]);
                 $payment->setIsTransactionPending(true); 
                 /* start to invoice the order */
                 /*$order = $payment->getOrder();
@@ -372,11 +372,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             return $data["status"];
         }
         
-        if ($data["status"] == "unconfirmed") {
+        if ($data["status"] == "authorizing") {
             $order = $this->getOrder();
-            $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW , "Unconfirmed Payment , it need some time to confirm , invoice Id : {$data['id']}");
+            $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW , "authorizing payment , it need some time to confirm , invoice Id : {$data['id']}");
             $order->save();
-            Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($id);
+            Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
             return $data["status"];
         }
         

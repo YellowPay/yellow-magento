@@ -67,8 +67,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                 if ($from_quote) {
                     $order = Mage::getModel('sales/order')->load($id, "quote_id");
                 }
-                /* skip quote + unconfirmed state because the order hasn't been placed yet */
-                if($from_quote && $body["status"] === "unconfirmed"){
+                /* skip quote + authorizing state because the order hasn't been placed yet */
+                if($from_quote && $body["status"] === "authorizing"){
                     $this->log(" quote id : {$id} is skipped because the order hasn't placed yet , IPN status {$body["status"]}");
                     echo json_encode(array("message" => "skipped"));
                     $this->log("----------- skipped the IPN request proccessing ---------------------");
@@ -103,7 +103,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                         break;
                     case 'partial':
                         $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had partail payment ready
-                        $status_message = " client paid but payment is unconfirmed / partial , invoice Id : " . $body['id'] ; // $invoice["message"];
+                        $status_message = " client paid but payment is partial , invoice Id : " . $body['id'] ; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->save();
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
@@ -117,9 +117,9 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                         $order->cancel();
                         $order->save();
                         break;
-                    /// its just a new invoice | unconfirmed , I will never expect a post with new status , though I had created the block of it  
-                    case 'unconfirmed':
-                        Mage::getResourceModel("bitcoin/ipn")->MarkAsUnconfirmed($body["id"]);
+                    /// its just a new invoice | authorizing , I will never expect a post with new status , though I had created the block of it
+                    case 'authorizing':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($body["id"]);
                         break;
                     case 'expired':
                         /* this to update the ipn table when invoice expired  */
@@ -170,7 +170,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
             switch ($status) {
                 case "paid":
                 case "partial":
-                case "unconfirmed":
+                case "authorizing":
                     return $this->_redirect('checkout/onepage/success');
                     break;
                 case "failed":

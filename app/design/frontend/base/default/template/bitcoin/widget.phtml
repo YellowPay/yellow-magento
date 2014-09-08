@@ -23,7 +23,7 @@ if ($iframe): echo $iframe;?>
           return;
         }
         switch (event.data){
-            case "unconfirmed":
+            case "authorizing":
                 buttons = $$("button.btn-checkout");
                 buttons.each(function(btn) { btn.click(); })
                 break;

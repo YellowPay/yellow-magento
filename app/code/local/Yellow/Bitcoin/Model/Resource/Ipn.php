@@ -31,8 +31,8 @@ class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abst
         $this->_init('bitcoin/ipn', 'id');
     }
 
-    public function MarkAsUnconfirmed($invoice_id) {
-        return $this->updatePayment($invoice_id, "unconfirmed");
+    public function MarkAsAuthorizing($invoice_id) {
+        return $this->updatePayment($invoice_id, "authorizing");
     }
 
     public function MarkAsPaid($invoice_id) {
