@@ -47,12 +47,8 @@ class Yellow_Bitcoin_Model_Resource_Ipn extends Mage_Core_Model_Resource_Db_Abst
         return $this->updatePayment($invoice_id, "expired");
     }
 
-    public function MarkAsUnderPaid($invoice_id) {
-        return $this->updatePayment($invoice_id, "underpaid");
-    }
-
-    public function MarkAsOverPaid($invoice_id) {
-        return $this->updatePayment($invoice_id, "overpaid");
+    public function MarkAsRefundOwed($invoice_id) {
+        return $this->updatePayment($invoice_id, "refund_owed");
     }
 
     public function MarkAsRefundPaid($invoice_id) {

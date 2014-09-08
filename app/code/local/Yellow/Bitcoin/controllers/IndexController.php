@@ -125,11 +125,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                         /* this to update the ipn table when invoice expired  */
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($body["id"]);
                         break;
-                    case 'underpaid':
-                        Mage::getResourceModel("bitcoin/ipn")->MarkAsUnderPaid($body["id"]);
-                        break;
-                    case 'overpaid':
-                        Mage::getResourceModel("bitcoin/ipn")->MarkAsOverPaid($body["id"]);
+                    case 'refund_owed':
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundOwed($body["id"]);
                         break;
                     case 'refund_requested':
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($body["id"]);
