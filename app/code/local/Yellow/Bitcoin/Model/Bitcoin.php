@@ -226,7 +226,10 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 $invoice_id = $invoiceModel->create($payment->getOrder()->getIncrementId(), array());
                 $invoiceModel->capture($invoice_id);
                 break;
-            default:
+            case "expired":
+                Mage::throwException(Mage::helper('bitcoin')->__("I'm sorry the invoice has {$invoice_status["status"]}, please refresh shopping cart"));
+                break;
+	    default:
                 $this->log("EXCEPTION: UNKNOW STATUES : " . $invoice_status["status"]);
                 Mage::throwException(Mage::helper('bitcoin')->__("We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"));
                 break;
