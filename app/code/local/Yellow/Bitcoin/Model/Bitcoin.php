@@ -126,8 +126,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      * @return boolean
      */
     public function isApiKeyConfigured() {
-        $public_key = Mage::getStoreConfig('payment/bitcoin/public_key');
-        $private_key = Mage::getStoreConfig('payment/bitcoin/private_key');
+        $public_key = Mage::helper('core')->decrypt(Mage::getStoreConfig('payment/bitcoin/public_key'));
+        $private_key = Mage::helper('core')->decrypt(Mage::getStoreConfig('payment/bitcoin/private_key'));
         return (!empty($private_key) && !empty($public_key));
     }
     
@@ -274,7 +274,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $nonce = round(microtime(true) * 1000);
         $url = $this->server_root . $this->api_uri_create_invoice;
         $message = $nonce . $url . $post_body;
-        $private_key = $this->getConfiguration("private_key");
+        $private_key = Mage::helper('core')->decrypt($this->getConfiguration("private_key"));
         $hash = hash_hmac("sha256", $message, $private_key, false);
 
         $http_client->setHeaders($this->getHeaders($nonce, $hash));
@@ -329,7 +329,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         $url = $this->server_root . str_replace("[id]", $id, $this->api_uri_check_payment);
         $nonce = round(microtime(true) * 1000);
         $message = $nonce . $url;
-        $private_key = $this->getConfiguration("private_key");
+        $private_key = Mage::helper('core')->decrypt($this->getConfiguration("private_key"));
         $hash = hash_hmac("sha256", $message, $private_key, false);
         $http_client = $this->getHTTPClient();
         $http_client->setHeaders($this->getHeaders($nonce, $hash));
@@ -442,7 +442,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
     private function getHeaders($nonce, $signature) {
         $headers = array(
             "Content-type:application/json",
-            "API-Key:" . $this->getConfiguration('public_key'),
+            "API-Key:" . Mage::helper('core')->decrypt($this->getConfiguration('public_key')),
             "API-Nonce:$nonce",
             "API-Sign:$signature"
         );
