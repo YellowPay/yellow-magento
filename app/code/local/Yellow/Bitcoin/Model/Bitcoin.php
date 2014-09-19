@@ -201,7 +201,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
             case "authorizing":
                 Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($invoice["id"]);
                 $payment->setIsTransactionPending(true);
-                /* start to invoice the order */
+                $order = $payment->getOrder();
+                $status_message = "Yellow invoice created , Invoice Id: " .$invoice['id'];
+                $order->addStatusToHistory( Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW ,$status_message);
+
+		/* start to invoice the order */
                 /*$order = $payment->getOrder();
                 $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
                 if (!count($order->getInvoiceCollection())) {
