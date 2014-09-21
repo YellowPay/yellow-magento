@@ -227,7 +227,13 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
                 $invoiceModel->capture($invoice_id);
                 break;
             case "expired":
-                Mage::throwException(Mage::helper('bitcoin')->__("I'm sorry the invoice has {$invoice_status["status"]}, please refresh shopping cart"));
+                Mage::throwException(Mage::helper('bitcoin')->__("I'm sorry the invoice has {$invoice_status["status"]}, please refresh shopping cart."));
+                break;
+            case "refund_owed":
+                Mage::throwException(Mage::helper('bitcoin')->__("Incorrect payment received, please request a refund."));
+                break;
+            case "refund_requested":
+                Mage::throwException(Mage::helper('bitcoin')->__("Refund requested! To place a new order, please refresh shopping cart."));
                 break;
 	    default:
                 $this->log("EXCEPTION: UNKNOW STATUES : " . $invoice_status["status"]);
