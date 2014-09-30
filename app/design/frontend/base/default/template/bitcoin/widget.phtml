@@ -18,7 +18,7 @@ switch ($url) {
 if ($iframe): echo $iframe;?>
 <script type="text/javascript">
      function invoiceListener(event) {
-        if (event.origin != "https://yolanda-perkins-stage.herokuapp.com") {
+        if (event.origin != "https://yolanda-perkins.herokuapp.com") {
           alert("Received message from unexpected domain: " + event.origin);
           return;
         }

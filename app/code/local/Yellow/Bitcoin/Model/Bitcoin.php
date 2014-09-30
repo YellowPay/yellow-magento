@@ -66,7 +66,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
      * Server Root for Yellow API 
      * @var String
      */
-    private $server_root = "https://yolanda-perkins-stage.herokuapp.com/";
+    private $server_root = "https://yolanda-perkins.herokuapp.com/";
     
     /**
      * create invoice URI 
