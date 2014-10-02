@@ -299,6 +299,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract {
         try {
             $response = $http_client->request();
             if ($response->getStatus() == "200") {
+                $this->log("Response: " . $response);
                 $body = $response->getBody();
                 $data = json_decode($body, true);
                 /* save the invoice in the database  */
