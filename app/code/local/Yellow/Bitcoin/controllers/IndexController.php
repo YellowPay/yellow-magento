@@ -74,10 +74,13 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action {
                     $this->log("----------- skipped the IPN request proccessing ---------------------");
                     return ;
                 }
-                if (!$order || $order->getPayment()->getMethodInstance()->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
-                    $this->log("either this order is not paid via Yellow , or it had unallowed state ");
-                    $this->log("----------- skipped the IPN request proccessing ---------------------");
-                    return $this->_forward("no-route");
+                if($order->getPayment()  instanceof Yellow_Bitcoin_Model_Bitcoin){
+                    $payment = $order->getPayment()->getMethodInstance();
+                    if (!$order || $payment->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW) {
+                        $this->log("either this order is not paid via Yellow , or it had unallowed state ");
+                        $this->log("----------- skipped the IPN request proccessing ---------------------");
+                        return $this->_forward("no-route");
+                    }
                 }
                 $this->log(" invoice status :  {$body["status"]}");
                 switch ($body['status']) {
