@@ -2,14 +2,17 @@
 $url = $this->GetWidgetUrl();
 $iframe = false;
 switch ($url) {
-    case 'nopayment':
+    case 'no payment':
     case 'disabled':
+        $iframe = false;
         break;
     case 'paid':
         echo 'Order payment received.  Place Order to complete.';
+        $iframe = false;
         break;
     case false:
         echo 'Error creating invoice. Please try again or try another payment solution.';
+        $iframe = false;
         break;
     default:
         $iframe = '<iframe src="' . $url . '" style="width:500px; height:255px; overflow:hidden; border:none; margin:auto; display:block;" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
