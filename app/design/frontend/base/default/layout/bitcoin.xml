@@ -1,19 +1,19 @@
-<?xml version="1.0"?>   
-<layout version="0.1.0"> 
+<?xml version="1.0"?>
+<layout version="0.1.0">
     <checkout_onepage_review>
         <reference name="checkout.onepage.review.info.items.after">
             <block name="yellow_widget" type="bitcoin/widget"/>
-        </reference>		
+        </reference>
     </checkout_onepage_review>
-    <bitcoin_index_status>   
-        <reference name="root">   
+    <bitcoin_index_status>
+        <reference name="root">
             <action method="setTemplate">
                 <template>page/1column.phtml</template>
-            </action>   
-        </reference>   
-        <reference name="content">   
-            <block type="bitcoin/status" name="bitcoin_status" template="bitcoin/status.phtml"/>   
-        </reference>   
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="bitcoin/status" name="bitcoin_status" template="bitcoin/status.phtml"/>
+        </reference>
     </bitcoin_index_status>
 </layout>   
 	

@@ -26,14 +26,14 @@ SOFTWARE.
 -->
 
 <config>
-  <modules>
-    <Yellow_Bitcoin>
-      <active>true</active>
-      <codePool>local</codePool>
-      <depends>
+    <modules>
+        <Yellow_Bitcoin>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
                 <Mage_Payment/>
-      </depends>
-      <version>0.1.1</version>
-    </Yellow_Bitcoin>
-  </modules>
+            </depends>
+            <version>0.1.1</version>
+        </Yellow_Bitcoin>
+    </modules>
 </config>

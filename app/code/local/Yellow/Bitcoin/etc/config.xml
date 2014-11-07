@@ -29,7 +29,7 @@ SOFTWARE.
         <Yellow_Bitcoin>
             <version>0.1.1</version>
             <depends>
-                <Mage_Payment />
+                <Mage_Payment/>
             </depends>
         </Yellow_Bitcoin>
     </modules>
@@ -113,5 +113,5 @@ SOFTWARE.
                 <payment_action>authorize</payment_action>
             </bitcoin>
         </payment>
-    </default>    
+    </default>
 </config> 
