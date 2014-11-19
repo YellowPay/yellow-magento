@@ -515,7 +515,7 @@
          * @param string $param
          * @return type
          */
-        private function getConfiguration($param)
+        public function getConfiguration($param)
         {
             return $this->getConfigData($param);
         }
