@@ -60,7 +60,9 @@
             $private_key       = Mage::helper('core')->decrypt(
                 Mage::getModel("bitcoin/bitcoin")->getConfiguration("private_key")
             );
-            $current_signature = hash_hmac("sha256", $payload, $private_key, false);
+            $url                 = Mage::helper('core/url')->getCurrentUrl();
+            $message             = $nonce . $url . $payload;
+            $current_signature = hash_hmac("sha256", $message, $private_key, false);
             $this->log("calculated Signature : " . $current_signature);
 
             if ($request_signature <> $current_signature && self::VALIDATION_REQUIRED) {
