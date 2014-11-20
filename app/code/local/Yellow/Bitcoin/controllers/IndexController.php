@@ -32,7 +32,7 @@
         public function IpnAction()
         {
             /**
-             * return notfound on all requests but POST
+             * return not found on all requests but POST
              */
             if (!$this->getRequest()->isPost()) {
                 return $this->_forward("no-route");
@@ -67,6 +67,8 @@
 
             if ($request_signature <> $current_signature && self::VALIDATION_REQUIRED) {
                 $this->log("VALIDATION FAILED");
+                $this->log("I will exit and return not found page");
+                $this->log("Your payment data still safe ");
                 return $this->_forward("no-route");
                 //return $this->_redirect('/');
                 //return Mage::app()->getResponse()
