@@ -27,7 +27,6 @@
      * */
     class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
     {
-        const VALIDATION_REQUIRED = false;
 
         public function IpnAction()
         {
@@ -35,7 +34,7 @@
              * return not found on all requests but POST
              */
             if (!$this->getRequest()->isPost()) {
-                return $this->_forward("no-route");
+                return $this->returnForbidden();
             }
             $ip                = long2ip(Mage::helper('core/http')->getRemoteAddr(true));
             $this->log("Start to validate IPN ") ;
@@ -54,7 +53,7 @@
 
             if (!$public_key || !$nonce || !$request_signature || !$payload) {
                 $this->log("one of the key info is missing , will exit now ");
-                return $this->_forward("no-route");
+                return $this->returnForbidden();
             }
 
             $private_key       = Mage::helper('core')->decrypt(
@@ -65,17 +64,11 @@
             $current_signature = hash_hmac("sha256", $message, $private_key, false);
             $this->log("calculated Signature : " . $current_signature);
 
-            if ($request_signature <> $current_signature && self::VALIDATION_REQUIRED) {
+            if ($request_signature <> $current_signature) {
                 $this->log("VALIDATION FAILED");
                 $this->log("I will exit and return not found page");
                 $this->log("Your payment data still safe ");
-                return $this->_forward("no-route");
-                //return $this->_redirect('/');
-                //return Mage::app()->getResponse()
-                //                  ->clearHeaders()$request->getRawBody()
-                //                  ->setHttpResponseCode(403)
-                //                  ->appendBody("Forbidden")
-                //                  ->sendResponse();
+                return $this->returnForbidden();
             }
             $this->log("VALIDATION PASSED :) Yay");
             /* end of validate the signature  */
@@ -244,6 +237,10 @@
             }
         }
 
+        /**
+         * return current object
+         * @return bool|Mage_Sales_Model_Order
+         */
         private function getOrder()
         {
             $session = Mage::getSingleton('checkout/session');
@@ -252,10 +249,25 @@
             }
             return Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
         }
-
+        /*
+         * log message to yellow.log
+         */
         private function log($message)
         {
             return Mage::log($message, Zend_Log::INFO, "yellow.log");
+        }
+
+        /**
+         *
+         * return 403 header
+         * @return mixed
+         *
+         */
+        private function returnForbidden(){
+            return $this->getResponse()
+                        ->clearHeaders()
+                        ->setHttpResponseCode(403)
+                        ->sendResponse();
         }
 
     }

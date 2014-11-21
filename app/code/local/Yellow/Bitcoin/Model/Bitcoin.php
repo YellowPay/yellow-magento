@@ -320,7 +320,7 @@
             $base_price  = $quote->getData("grand_total");
             $base_ccy    = $quote->getData($currency_code_key);
             $quote_id    = $quote->getData("entity_id");
-            $ipnUrl      = Mage::getUrl("bitcoin/index/ipn", array("id" => base64_encode($quote_id)));
+            $ipnUrl      = Mage::getUrl("bitcoin/index/ipn", array( "_secure" => true , "id" => base64_encode($quote_id)));
             $redirectUrl = "";
             if ($redirect) {
                 $redirectUrl = Mage::getUrl("bitcoin/index/status");
