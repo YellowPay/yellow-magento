@@ -33,6 +33,7 @@
             /**
              * return not found on all requests but POST
              */
+            $this->log("-----------validate an IPN request precessing ------------");
             if (!$this->getRequest()->isPost()) {
                 return $this->returnForbidden();
             }
@@ -68,6 +69,7 @@
                 $this->log("VALIDATION FAILED");
                 $this->log("I will exit and return not found page");
                 $this->log("Your payment data still safe ");
+                $this->log("----------- skipped the IPN request proccessing ---------------------");
                 return $this->returnForbidden();
             }
             $this->log("VALIDATION PASSED :) Yay");
