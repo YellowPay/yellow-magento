@@ -5,6 +5,18 @@
             <block name="yellow_widget" type="bitcoin/widget"/>
         </reference>
     </checkout_onepage_review>
+    <bitcoin_index_pay>
+        <reference name="root">
+            <remove name="left" />
+            <remove name="right" />
+            <action method="setTemplate">
+                <template>page/1column.phtml</template>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="bitcoin/fullscreen" name="bitcoin_fullscreen" template="bitcoin/fullscreen.phtml"/>
+        </reference>
+    </bitcoin_index_pay>
     <bitcoin_index_status>
         <reference name="root">
             <action method="setTemplate">

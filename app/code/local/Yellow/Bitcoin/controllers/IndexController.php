@@ -28,6 +28,12 @@
     class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
     {
 
+
+        public function payAction()
+        {
+            $this->loadLayout();
+            $this->renderLayout();
+        }
         public function IpnAction()
         {
             /**

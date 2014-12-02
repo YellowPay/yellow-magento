@@ -294,11 +294,16 @@
         public function getOrderPlaceRedirectUrl()
         {
             if (Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
-                $invoice = Mage::getSingleton('core/session')->getData("invoice");
-                return $invoice["url"];
+                $target_url = Mage::getUrl("bitcoin/index/pay");
+                return $target_url;
             } else {
                 return '';
             }
+        }
+
+        public function getInvoiceData()
+        {
+            return Mage::getSingleton('core/session')->getData("invoice");
         }
 
         /**
@@ -322,9 +327,9 @@
             $quote_id    = $quote->getData("entity_id");
             $ipnUrl      = Mage::getUrl("bitcoin/index/ipn", array( "_secure" => true , "id" => base64_encode($quote_id)));
             $redirectUrl = "";
-            if ($redirect) {
+            /*if ($redirect) {
                 $redirectUrl = Mage::getUrl("bitcoin/index/status");
-            }
+            }*/
             $http_client         = $this->getHTTPClient();
             $yellow_payment_data = array(
                 "base_price" => $base_price, /// Set to 0.30 for testing
@@ -440,46 +445,44 @@
                     )
                 );
             }
-            if ($data["status"] == "paid") {
-                $order = $this->getOrder();
-                $order->addStatusToHistory(
-                    $this->getSuccessStatus(),
-                    "Payment confirmed , invoice Id " . $data["id"],
-                    true
-                );
-                $order->sendNewOrderEmail();
-                $order->save();
-                Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
-                /* create an invoice */
-                $invoiceModel = Mage::getModel('sales/order_invoice_api');
-                $invoice_id   = $invoiceModel->create($order->getIncrementId(), array());
-                $invoiceModel->capture($invoice_id);
-                return $data["status"];
+            $order = $this->getOrder();
+            switch ($data["status"]){
+                case $data["status"] == "paid" :
+                    $order->addStatusToHistory(
+                        $this->getSuccessStatus(),
+                        "Payment confirmed , invoice Id " . $data["id"],
+                        true
+                    );
+                    $order->sendNewOrderEmail();
+                    $order->save();
+                    Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
+                    /* create an invoice */
+                    $invoiceModel = Mage::getModel('sales/order_invoice_api');
+                    $invoice_id   = $invoiceModel->create($order->getIncrementId(), array());
+                    $invoiceModel->capture($invoice_id);
+                    break;
+                case $data["status"] == "authorizing":
+                    $order->addStatusToHistory(
+                        Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW,
+                        "authorizing payment , it need some time to confirm , invoice Id : {$data['id']}"
+                    );
+                    $order->save();
+                    Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
+                    break;
+                case $data["status"] === "failed":
+                    $order->addStatusToHistory(
+                        $this->getFailedStatus(),
+                        "client failed to pay , invoice Id : {$data["id"]} ",
+                        true
+                    );
+                    $order->cancel();
+                    $order->save();
+                    break;
+                default:
+                    return false;
+                    break;
             }
-
-            if ($data["status"] == "authorizing") {
-                $order = $this->getOrder();
-                $order->addStatusToHistory(
-                    Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW,
-                    "authorizing payment , it need some time to confirm , invoice Id : {$data['id']}"
-                );
-                $order->save();
-                Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
-                return $data["status"];
-            }
-
-            if ($data["status"] === "failed") {
-                $order = $this->getOrder();
-                $order->addStatusToHistory(
-                    $this->getFailedStatus(),
-                    "client failed to pay , invoice Id : {$data["id"]} ",
-                    true
-                );
-                $order->cancel();
-                $order->save();
-                return $data["status"];
-            }
-            return false;
+            return $data["status"];
         }
 
         /**
