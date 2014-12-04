@@ -10,22 +10,18 @@
             <remove name="left" />
             <remove name="right" />
             <action method="setTemplate">
-                <template>page/1column.phtml</template>
+                <template>page/empty.phtml</template>
             </action>
         </reference>
+        <reference name="head">
+            <action method="setTitle" translate="title"><title>Pay With Yellow!</title></action>
+            <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name></action>
+        </reference>
         <reference name="content">
-            <block type="bitcoin/fullscreen" name="bitcoin_fullscreen" template="bitcoin/fullscreen.phtml"/>
+            <block type="bitcoin/fullscreen_widget_header"  name="widget_header"  template="bitcoin/fullscreen/widget/header.phtml"/>
+            <block type="bitcoin/fullscreen_widget_content" name="widget_content" template="bitcoin/fullscreen/widget/content.phtml"/>
+            <block type="bitcoin/fullscreen_widget_footer"  name="widget_footer"  template="bitcoin/fullscreen/widget/footer.phtml"/>
         </reference>
     </bitcoin_index_pay>
-    <bitcoin_index_status>
-        <reference name="root">
-            <action method="setTemplate">
-                <template>page/1column.phtml</template>
-            </action>
-        </reference>
-        <reference name="content">
-            <block type="bitcoin/status" name="bitcoin_status" template="bitcoin/status.phtml"/>
-        </reference>
-    </bitcoin_index_status>
 </layout>   
 	

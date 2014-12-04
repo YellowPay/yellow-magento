@@ -1,0 +1,18 @@
+<?php $storeName = $this->getStoreName()?>
+<?php $invoice   = $this->getInvoiceData();?>
+<?php $order     = $this->getLastOrder();?>
+<div class="widget_footer">
+   <div class="amount">
+        <h1><?php echo $this->__("Order# %s" , $order->getIncrementId());?></h1>
+        <p><?php echo $this->__("Amount Due :");?><span><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?></span></p>
+        <small><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?> = <?php echo $this->__($invoice["base_ccy"]);?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></small>
+   </div>
+    <div class="payment_address">
+        <h1><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></h1>
+        <p><?php echo $this->escapeHtml($this->getContactEmail());?></p>
+        <br/>
+        <address>
+            <?php echo $this->getBillingAddress();?>
+        </address>
+    </div>
+</div>

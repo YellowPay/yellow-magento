@@ -25,23 +25,11 @@
      * SOFTWARE.
      *
      **/
-    class Yellow_Bitcoin_Block_Fullscreen extends Yellow_Bitcoin_Block_Widget
+
+    Class Yellow_Bitcoin_Block_Fullscreen_Widget_Header extends Mage_Core_Block_Template
     {
-        public function GetWidgetUrl()
-        {
-            $order_id = Mage::getSingleton('checkout/session') ->getLastRealOrderId();
-            $order = Mage::getModel("sales/order")->loadBYIncrementId($order_id);
-            if (!($order)
-                or !($payment = $order->getPayment())
-                or !($instance = $payment->getMethodInstance())
-                or ($instance->getCode() != 'bitcoin')
-            ) {
-                return 'no payment';
-            }
-            if (Mage::getStoreConfig('payment/bitcoin/fullscreen') != 1 ) {
-                return 'disabled';
-            }
-            $invoice = $instance->getInvoiceData();
-            return $invoice['url'];
+
+        public function getStoreName(){
+            return Mage::app()->getStore()->getName();
         }
     }

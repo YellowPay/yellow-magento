@@ -1,0 +1,34 @@
+.widget_header , .widget_footer{
+    width: 100%;
+    background-color: #efefef;
+    float: left;
+    display: block;
+}
+.widget_footer{
+    border-left: 15px solid #ffcb20;
+}
+.widget_header h1{
+    text-align: center;
+    color: #999;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.amount {
+    width:30%;
+    float: left;
+    text-align: center;
+    margin-top: 25px;
+    background-color: #ffffff;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.amount h1{
+    text-align: center;
+}
+.payment_address{
+    background-color: #efefef;
+    width: 70%;
+    float: left;
+    text-align: center;
+}
