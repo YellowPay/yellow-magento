@@ -469,14 +469,38 @@
                     $order->save();
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
                     break;
+                case $data["status"] ==  "refund_requested" :
+                    if(!$order->canCancel()){
+                        $this->log("I couldn't cancel order#" . $order->getIncrementId());
+                    }else{
+                        $this->log("refund_requested order");
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($id);
+                        $order->addStatusToHistory(
+                            Mage_Sales_Model_Order::STATE_CANCELED,
+                            "refund_requested invoice , invoice #{$id} ",
+                            true
+                        );
+                        $order->cancel();
+                        $order->save();
+                        $this->log("I canceled order#" . $order->getIncrementId());
+                    }
+                    break;
                 case $data["status"] === "failed":
-                    $order->addStatusToHistory(
-                        $this->getFailedStatus(),
-                        "client failed to pay , invoice Id : {$data["id"]} ",
-                        true
-                    );
-                    $order->cancel();
-                    $order->save();
+                case $data["status"] === "expired":
+                    if(!$order->canCancel()){
+                        $this->log("I couldn't cancel order#" . $order->getIncrementId());
+                    }else{
+                        $this->log("expired order");
+                        Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($id);
+                        $order->addStatusToHistory(
+                            Mage_Sales_Model_Order::STATE_CANCELED,
+                            "expired invoice , invoice #{$id}",
+                            true
+                        );
+                        $order->cancel();
+                        $order->save();
+                        $this->log("I canceled order#" . $order->getIncrementId());
+                    }
                     break;
                 default:
                     return false;

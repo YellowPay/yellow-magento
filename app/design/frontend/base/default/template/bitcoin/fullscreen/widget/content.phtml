@@ -31,6 +31,7 @@
                         break;
                     case "expired":
                     case "refund_requested":
+                        window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
                         break;
                     default:
                         alert("unknown order status :" + event.data);

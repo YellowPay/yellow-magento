@@ -234,8 +234,14 @@
                     case "failed":
                         return $this->_redirect('checkout/onepage/failure');
                         break;
+                    case "refund_requested":
+                        return $this->_redirect('checkout/onepage/failure');
+                        break;
+                    case "expired":
+                        return $this->_redirect('checkout/onepage/failure');
+                        break;
                     default:
-                        $this->log("unknow invoice status , invoice id : {$id}");
+                        $this->log("unknown invoice status , invoice id : {$id}");
                         return $this->_forward("no-route");
                         break;
                 }

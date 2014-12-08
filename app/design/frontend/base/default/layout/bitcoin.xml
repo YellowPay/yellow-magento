@@ -23,5 +23,14 @@
             <block type="bitcoin/fullscreen_widget_footer"  name="widget_footer"  template="bitcoin/fullscreen/widget/footer.phtml"/>
         </reference>
     </bitcoin_index_pay>
+    <bitcoin_index_status>
+        <reference name="root">
+            <remove name="left" />
+            <remove name="right" />
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
+        </reference>
+    </bitcoin_index_status>
 </layout>   
 	
