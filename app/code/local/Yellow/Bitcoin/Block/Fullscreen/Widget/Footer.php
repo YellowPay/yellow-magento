@@ -29,6 +29,10 @@
     Class Yellow_Bitcoin_Block_Fullscreen_Widget_Footer extends Yellow_Bitcoin_Block_Fullscreen_Widget_Header
     {
         /**
+         * @var Mage_Sales_Model_Order
+         */
+        public $order;
+        /**
          * @return sales email address
          */
         public function getContactEmail(){
@@ -40,6 +44,7 @@
          * @return mixed
          */
         public function getBillingAddress(){
+            return "static address";
             $order = $this->getLastOrder();
             $htmlAddress = $order->getBillingAddress()->format("html");
             return $htmlAddress;
@@ -75,6 +80,17 @@
         {
             $order_id = Mage::getSingleton('checkout/session') ->getLastRealOrderId();
             $order = Mage::getModel("sales/order")->loadByIncrementId($order_id);
-            return $order;
+            $this->order = $order;
+            return $this->order;
+        }
+
+
+        /**
+         * this was made for future use
+         *
+         * @param $order
+         */
+        public function setLastOrder($order){
+            $this->order = $order;
         }
     }

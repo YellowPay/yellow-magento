@@ -6,6 +6,12 @@
         </reference>
     </checkout_onepage_review>
     <bitcoin_index_pay>
+        <reference name="head">
+            <action method="addItem"><type>skin_js</type><name>js/jquery.min.js</name></action>
+            <action method="addItem"><type>skin_js</type><name>js/bootstrap.min.js</name></action>
+            <action method="addItem"><type>skin_css</type><name>css/bootstrap.min.css</name><params/></action>
+            <action method="addItem"><type>skin_css</type><name>css/bootstrap-theme.min.css</name><params/></action>
+        </reference>
         <reference name="root">
             <remove name="left" />
             <remove name="right" />
@@ -18,9 +24,7 @@
             <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name></action>
         </reference>
         <reference name="content">
-            <block type="bitcoin/fullscreen_widget_header"  name="widget_header"  template="bitcoin/fullscreen/widget/header.phtml"/>
             <block type="bitcoin/fullscreen_widget_content" name="widget_content" template="bitcoin/fullscreen/widget/content.phtml"/>
-            <block type="bitcoin/fullscreen_widget_footer"  name="widget_footer"  template="bitcoin/fullscreen/widget/footer.phtml"/>
         </reference>
     </bitcoin_index_pay>
     <bitcoin_index_status>

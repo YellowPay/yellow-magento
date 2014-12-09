@@ -1,8 +1,5 @@
 .widget_header , .widget_footer{
-    width: 100%;
     background-color: #efefef;
-    float: left;
-    display: block;
 }
 .widget_footer{
     border-left: 15px solid #ffcb20;
