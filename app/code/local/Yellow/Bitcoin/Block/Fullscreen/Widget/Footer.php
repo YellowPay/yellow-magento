@@ -44,7 +44,6 @@
          * @return mixed
          */
         public function getBillingAddress(){
-            return "static address";
             $order = $this->getLastOrder();
             $htmlAddress = $order->getBillingAddress()->format("html");
             return $htmlAddress;
