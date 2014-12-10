@@ -7,6 +7,13 @@
     </checkout_onepage_review>
     <bitcoin_index_pay>
         <reference name="head">
+            <action method="removeItem"><type>skin_js</type><name>js/prototype/prototype.js</name></action>
+            <action method="removeItem"><type>skin_js</type><name>js/lib/ccard.js</name></action>
+            <action method="removeItem"><type>skin_js</type><name>js/prototype/validation.js</name></action>
+            <action method="removeItem"><type>skin_js</type><name>js/prototype/builder.js</name></action>
+            <action method="removeItem"><type>skin_js</type><name>js/prototype/effects.js</name></action>
+            <action method="removeItem"><type>skin_css</type><name>css/css_file.css</name></action>
+
             <action method="addItem"><type>skin_js</type><name>js/jquery.min.js</name></action>
             <action method="addItem"><type>skin_js</type><name>js/bootstrap.min.js</name></action>
             <action method="addItem"><type>skin_css</type><name>css/bootstrap.min.css</name><params/></action>

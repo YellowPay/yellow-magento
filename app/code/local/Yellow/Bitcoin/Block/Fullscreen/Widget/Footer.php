@@ -40,6 +40,18 @@
         }
 
         /**
+         * get customer email
+         * @return string
+         */
+        public function getCustomerEmail(){
+            if($this->order instanceof Mage_Sales_Model_Order){
+                $email = $this->order->getCustomerEmail();
+            }else{
+                $email = "";
+            }
+            return $email;
+        }
+        /**
          * return billing address
          * @return mixed
          */

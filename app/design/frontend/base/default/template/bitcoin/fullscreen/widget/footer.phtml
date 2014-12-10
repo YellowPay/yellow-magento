@@ -1,21 +1,27 @@
 <?php $storeName = $this->getStoreName()?>
 <?php $invoice   = $this->getInvoiceData();?>
 <?php $order     = $this->getLastOrder();?>
-<?php $invoice = array("invoice_ccy" =>  "invoice_ccy" , "invoice_price" => "invoice_price" , "base_ccy" => "base_ccy" , "base_price" => "base_price");?>
+<?php //$invoice = array("invoice_ccy" =>  "invoice_ccy" , "invoice_price" => "invoice_price" , "base_ccy" => "base_ccy" , "base_price" => "base_price");?>
 <div class="widget_footer col-md-12">
     <div class="row">
-        <div class="col-md-4">
-            <h1><?php echo $this->__("Order# %s" , $order->getIncrementId());?></h1>
-            <p><?php echo $this->__("Amount Due :");?><span><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?></span></p>
-            <small><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?> = <?php echo $this->__($invoice["base_ccy"]);?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></small>
+        <div class="col-md-3">
+            <div class="white-box">
+                <h1><?php echo $this->__("Order# %s" , $order->getIncrementId());?></h1>
+                <p><?php echo $this->__("Amount Due :");?></p>
+                <h3><strong><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?></strong></h3>
+                <small><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?> = <?php echo $this->__($invoice["base_ccy"]);?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></small>
+            </div>
         </div>
+        <div class="col-md-1"><br/></div>
         <div class="col-md-8">
             <h1><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></h1>
-            <p><?php echo $this->escapeHtml($this->getContactEmail());?></p>
+            <p><span class="glyphicon glyphicon-envelope"></span>  <?php echo $this->escapeHtml($this->getContactEmail());?></p>
             <br/>
             <address>
                 <?php echo $this->getBillingAddress();?>
             </address>
+            <strong> <span class="glyphicon glyphicon-envelope"></span> <?php echo $this->getCustomerEmail();?></strong>
+            <p></p>
         </div>
     </div>
 </div>

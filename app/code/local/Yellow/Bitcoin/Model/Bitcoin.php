@@ -447,6 +447,10 @@
             }
             $order = $this->getOrder();
             switch ($data["status"]){
+                case $data["status"] == "new":
+                    $this->log("this is new invoice while he tried to go to status page ");
+                    $this->log("nothing to care of , I will redirect him back to the payment page ");
+                    break;
                 case $data["status"] == "paid" :
                     $order->addStatusToHistory(
                         $this->getSuccessStatus(),
@@ -470,8 +474,7 @@
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
                     break;
                 case $data["status"] ==  "refund_requested" :
-                    $order->setState($this->getFailedStatus());
-                    $order->save();
+                    $order->setState(Mage_Sales_Model_Order::STATE_NEW);
                     if(!$order->canCancel()){
                         $this->log("I couldn't cancel order#" . $order->getIncrementId());
                     }else{
@@ -489,8 +492,7 @@
                     break;
                 case $data["status"] === "failed":
                 case $data["status"] === "expired":
-                    $order->setState($this->getFailedStatus());
-                    $order->save();
+                    $order->setState(Mage_Sales_Model_Order::STATE_NEW);
                     if(!$order->canCancel()){
                         $this->log("I couldn't cancel order#" . $order->getIncrementId());
                     }else{

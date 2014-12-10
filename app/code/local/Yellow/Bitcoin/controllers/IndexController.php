@@ -226,6 +226,9 @@
                     return $this->_forward("no-route");
                 }
                 switch ($status) {
+                    case "new":
+                        return $this->_redirect('bitcoin/index/pay');
+                        break;
                     case "paid":
                     case "partial":
                     case "authorizing":
