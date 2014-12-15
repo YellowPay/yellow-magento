@@ -29,7 +29,9 @@
                 if ($iframe): echo $iframe;?>
                     <script type="text/javascript">
                         function invoiceListener(event) {
-                            if (event.origin != "https://yolanda-perkins.herokuapp.com") {
+                            var a = document.createElement("a");
+                            a.href = event.origin;
+                            if (a.hostname != "yolanda-perkins.herokuapp.com" || a.hostname != "yellowpay.co" || a.protocol <> "https:" ) {
                                 alert("Received message from unexpected domain: " + event.origin);
                                 return;
                             }
