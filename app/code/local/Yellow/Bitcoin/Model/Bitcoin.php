@@ -70,22 +70,21 @@
          *
          * @var String
          */
-        private $server_root = "https://yolanda-perkins.herokuapp.com/";
-        //private $server_root = "https://api.yellowpay.co/";
+        private $server_root = "https://api.yellowpay.co/v1/";
 
         /**
          * create invoice URI
          *
          * @var String
          */
-        private $api_uri_create_invoice = "api/invoice/";
+        private $api_uri_create_invoice = "invoice/";
 
         /**
          * check invoice status URI
          *
          * @var String
          */
-        private $api_uri_check_payment = "api/invoice/[id]/";
+        private $api_uri_check_payment = "invoice/[id]/";
 
         /**
          * @type Mage_Sales_Model_Order
