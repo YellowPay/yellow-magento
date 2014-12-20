@@ -36,6 +36,7 @@
                             }
                             switch (event.data) {
                                 case "authorizing":
+                                case "paid":
                                     window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
                                     break;
                                 case "expired":
