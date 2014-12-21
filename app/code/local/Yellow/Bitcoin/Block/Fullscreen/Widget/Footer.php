@@ -51,6 +51,21 @@
             }
             return $email;
         }
+
+        /**
+         * get customer email
+         * @return string
+         */
+        public function getCustomerName()
+        {
+            if($this->order instanceof Mage_Sales_Model_Order){
+                $name = Mage::getModel("customer/customer")->load($this->order->getCustomerId())->getName();
+            }else{
+                $name= "";
+            }
+            return $name;
+        }
+
         /**
          * return billing address
          * @return mixed

@@ -1,4 +1,8 @@
 <?php $storeName = $this->getStoreName();?>
-<div class="widget_header">
-      <h1><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></h1>
+<div id="yp-fullpage-header" class="clearfix" >
+        <div class="yp-header-logo"><div class="logo-img">
+                <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a>
+        </div>
+    </div>
+    <div class="yp-header-title"><span><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></span></div>
 </div>

@@ -27,6 +27,10 @@
      **/
     class Yellow_Bitcoin_Block_Fullscreen_Widget_Content extends Yellow_Bitcoin_Block_Widget
     {
+        /**
+         * create an invoice & return the url of it
+         * @return string
+         */
         public function GetWidgetUrl()
         {
             $order_id = Mage::getSingleton('checkout/session') ->getLastRealOrderId();

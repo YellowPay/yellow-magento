@@ -6,20 +6,8 @@
         </reference>
     </checkout_onepage_review>
     <bitcoin_index_pay>
-        <reference name="head">
-            <action method="removeItem"><type>skin_js</type><name>js/prototype/prototype.js</name></action>
-            <action method="removeItem"><type>skin_js</type><name>js/lib/ccard.js</name></action>
-            <action method="removeItem"><type>skin_js</type><name>js/prototype/validation.js</name></action>
-            <action method="removeItem"><type>skin_js</type><name>js/prototype/builder.js</name></action>
-            <action method="removeItem"><type>skin_js</type><name>js/prototype/effects.js</name></action>
-            <action method="removeItem"><type>skin_css</type><name>css/css_file.css</name></action>
-
-            <action method="addItem"><type>skin_js</type><name>js/jquery.min.js</name></action>
-            <action method="addItem"><type>skin_js</type><name>js/bootstrap.min.js</name></action>
-            <action method="addItem"><type>skin_css</type><name>css/bootstrap.min.css</name><params/></action>
-            <action method="addItem"><type>skin_css</type><name>css/bootstrap-theme.min.css</name><params/></action>
-        </reference>
         <reference name="root">
+            <action method="addBodyClass"><classname></classname></action>
             <remove name="left" />
             <remove name="right" />
             <action method="setTemplate">
@@ -27,8 +15,8 @@
             </action>
         </reference>
         <reference name="head">
-            <action method="setTitle" translate="title"><title>Pay With Yellow!</title></action>
-            <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name></action>
+            <action method="setTitle" translate="title"><title>Pay With Yellow</title></action>
+            <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name><params/></action>
         </reference>
         <reference name="content">
             <block type="bitcoin/fullscreen_widget_content" name="widget_content" template="bitcoin/fullscreen/widget/content.phtml"/>
