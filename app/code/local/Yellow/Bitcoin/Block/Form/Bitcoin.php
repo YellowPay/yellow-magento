@@ -43,15 +43,24 @@
          */
         protected function _construct()
         {
-            $logo = Mage::getConfig()->getBlockClassName('core/template');
-            $logo = new $logo;
+            $class = Mage::getConfig()->getBlockClassName('core/template');
+
+            $guide = "";
+            if($this->isFullScreen()){
+                $guide = new $class;
+                $guide->setTemplate("bitcoin/form/bitcoin.phtml");
+                $guide = $guide->toHtml();
+            }
+
+            $logo = new $class;
             $logo->setTemplate('bitcoin/form/logo.phtml');
             $this->setTemplate('bitcoin/form/bitcoin.phtml')
                 ->setRedirectMessage(
                     Mage::helper('bitcoin')->__('You will be Pay via Yellow')
                 )
                 ->setMethodTitle('')
-                ->setMethodLabelAfterHtml($logo->toHtml());
+                ->setMethodLabelAfterHtml($logo->toHtml() . $guide);
+
             return parent::_construct();
         }
 
@@ -69,5 +78,13 @@
             return $this->_instructions;
         }
 
+        /**
+         * check if the fullscreen setting is set to yes / no
+         * @return bool
+         */
+        public function isFullScreen()
+        {
+            return ( Mage::getStoreConfig('payment/bitcoin/fullscreen') == 1 );
+        }
 
     }

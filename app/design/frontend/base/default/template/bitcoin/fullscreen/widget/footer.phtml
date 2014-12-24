@@ -16,14 +16,19 @@
         <div id="yp-fullpage-info">
             <div class="yp-bolder-text"><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></div>
             <div class="yp-vertical-space-10"></div>
-            <div class="yp-normal-text"><span class="icon-mail2"></span>  <span><?php echo $this->escapeHtml($this->getContactEmail());?></span></div>
+            <div class="yp-normal-text yp-email-field">
+                <span class="icon-mail2 yp-icon"></span>
+                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getContactEmail());?></span>
+            </div>
             <div class="yp-vertical-space-20"></div>
             <div class="yp-bolder-text"><p><?php echo $this->__($this->getCustomerName()); ?></p></div>
             <address>
                 <?php echo $this->getBillingAddress();?>
             </address>
-            <br/>
-            <div class="yp-normal-text"><span class="icon-mail2"></span>  <span><?php echo $this->escapeHtml($this->getCustomerEmail());?></span></div>
+            <div class="yp-normal-text yp-email-field">
+                <span class="icon-mail2 yp-icon"></span>
+                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getCustomerEmail());?></span>
+            </div>
         </div>
     </div>
 </div>
