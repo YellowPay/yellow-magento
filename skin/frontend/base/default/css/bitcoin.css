@@ -299,14 +299,14 @@
 }
 .icon-mail2.yp-icon:before
 {
-    font-size: 17px;
+    font-size: 15px;
 }
 
 .yp-icon
 {
     display: table-cell;
     vertical-align: middle;
-    padding: 0px 5px;
+    padding: 2px 5px 0px 2px;
 }
 
 .yp-email-field
