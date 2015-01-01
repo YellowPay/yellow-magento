@@ -238,6 +238,7 @@
                         return $this->_redirect('checkout/onepage/failure');
                         break;
                     case "refund_requested":
+                    case "refund_owed":
                         return $this->_redirect('checkout/onepage/failure');
                         break;
                     case "expired":
