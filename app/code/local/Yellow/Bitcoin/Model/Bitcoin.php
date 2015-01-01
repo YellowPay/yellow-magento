@@ -177,10 +177,10 @@
                 //$invoiceId = Mage::getModel('sales/order_invoice_api')->create($orderId, array());
                 return $this;
             } else {
-                $this->log("an error happened during creating an invoice" . __LINE__);
+                $this->log("An error occurred during invoice creation: " . __LINE__);
                 Mage::throwException(
                     Mage::helper('bitcoin')->__(
-                        "We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"
+                        "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
                     )
                 );
             }
@@ -202,16 +202,16 @@
             if (!is_array($invoice_status)) {
                 Mage::throwException(
                     Mage::helper('bitcoin')->__(
-                        "We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"
+                        "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
                     )
                 );
             }
             switch ($invoice_status["status"]) {
                 case "new":
                     // This is the error that is displayed to the customer during checkout.
-                    Mage::throwException("Order not paid for.  Please pay first and then Place your Order.");
+                    Mage::throwException("Order has not been paid. Please pay first and then place your order.");
                     Mage::log(
-                        'Order not paid for. Please pay first and then Place Your Order.',
+                        'Order has not been paid. Please pay first and then place your order.',
                         Zend_Log::CRIT,
                         'yellow.log'
                     );
@@ -219,9 +219,9 @@
                 case "partial":
                     // This is the error that is displayed to the customer during checkout.
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($invoice["id"]);
-                    Mage::throwException("Order is partialy paid  for.  we don't support partial payment yet.");
+                    Mage::throwException("Order has been partially paid. We don't support partial payment yet.");
                     Mage::log(
-                        'Order is partialy paid  for.  we don\'t support partial payment yet.',
+                        'Order has been partially paid. We don\'t support partial payment yet.',
                         Zend_Log::CRIT,
                         'yellow.log'
                     );
@@ -231,7 +231,7 @@
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($invoice["id"]);
                     $payment->setIsTransactionPending(true);
                     $order          = $payment->getOrder();
-                    $status_message = "Yellow invoice created , Invoice Id: " . $invoice['id'];
+                    $status_message = "Yellow invoice created. Invoice Id: " . $invoice['id'];
                     $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, $status_message);
 
                     /* start to invoice the order */
@@ -258,7 +258,7 @@
                 case "expired":
                     Mage::throwException(
                         Mage::helper('bitcoin')->__(
-                            "I'm sorry the invoice has {$invoice_status["status"]}, please refresh shopping cart."
+                            "I'm sorry the invoice has {$invoice_status["status"]}, please refresh the shopping cart."
                         )
                     );
                     break;
@@ -275,10 +275,10 @@
                     );
                     break;
                 default:
-                    $this->log("EXCEPTION: UNKNOW STATUES : " . $invoice_status["status"]);
+                    $this->log("EXCEPTION - UNKNOW STATUS: " . $invoice_status["status"]);
                     Mage::throwException(
                         Mage::helper('bitcoin')->__(
-                            "We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co"
+                            "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
                         )
                     );
                     break;
@@ -377,16 +377,16 @@
                     return $data;
                 } else {
                     Mage::throwException($response->getBody());
-                    $this->log("I had seen an error code {$response->getStatus()}");
-                    $this->log("response body was :" . json_encode($response->getBody()));
+                    $this->log("Error code response received: {$response->getStatus()}");
+                    $this->log("Response body:" . json_encode($response->getBody()));
                     return false;
                 }
             } catch (Exception $exc) {
                 $this->log($exc->getMessage());
-                $this->log("EXCEPTION:" . json_encode($exc));
+                $this->log("EXCEPTION: " . json_encode($exc));
                 Mage::throwException(
                     Mage::helper('bitcoin')->__(
-                        "{$exc->getMessage()}\n , We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co "
+                        "{$exc->getMessage()}\n We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
                     )
                 );
             }
@@ -419,7 +419,7 @@
                 $this->log("EXCEPTION:" . json_encode($exc));
                 Mage::throwException(
                     Mage::helper('bitcoin')->__(
-                        "We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co   " . $exc->getMessage(
+                        "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co\n" . $exc->getMessage(
                         )
                     )
                 );
@@ -441,20 +441,20 @@
             if (!is_array($data)) {
                 Mage::throwException(
                     Mage::helper('bitcoin')->__(
-                        "We're sorry. An internal error happened while completing your request. You can refresh the page to try again.  You can always send us an email at support@yellowpay.co  +  line:" . __LINE__
+                        "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co\nline: " . __LINE__
                     )
                 );
             }
             $order = $this->getOrder();
             switch ($data["status"]){
                 case $data["status"] == "new":
-                    $this->log("this is new invoice while he tried to go to status page ");
-                    $this->log("nothing to care of , I will redirect him back to the payment page ");
+                    $this->log("Status page accessed for a new invoice.");
+                    $this->log("Nothing to do. Redirecting back to the payment page.");
                     break;
                 case $data["status"] == "paid" :
                     $order->addStatusToHistory(
                         $this->getSuccessStatus(),
-                        "Payment confirmed , invoice Id " . $data["id"],
+                        "Payment confirmed. Invoice Id: " . $data["id"],
                         true
                     );
                     $order->sendNewOrderEmail();
@@ -468,7 +468,7 @@
                 case $data["status"] == "authorizing":
                     $order->addStatusToHistory(
                         Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW,
-                        "authorizing payment , it need some time to confirm , invoice Id : {$data['id']}"
+                        "Authorizing payment. This typically takes 10 minutes. Invoice Id: {$data['id']}"
                     );
                     $order->save();
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
@@ -476,36 +476,36 @@
                 case $data["status"] ==  "refund_requested" :
                     $order->setState(Mage_Sales_Model_Order::STATE_NEW);
                     if(!$order->canCancel()){
-                        $this->log("I couldn't cancel order#" . $order->getIncrementId());
+                        $this->log("Unable to cancel order. Order #" . $order->getIncrementId());
                     }else{
                         $this->log("refund_requested order");
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($id);
                         $order->addStatusToHistory(
                             $this->getFailedStatus(),
-                            "refund_requested invoice , invoice #{$id} ",
+                            "refund_requested. Invoice #{$id} ",
                             true
                         );
                         $order->cancel();
                         $order->save();
-                        $this->log("I canceled order#" . $order->getIncrementId());
+                        $this->log("Order cancelled. Order #" . $order->getIncrementId());
                     }
                     break;
                 case $data["status"] === "failed":
                 case $data["status"] === "expired":
                     $order->setState(Mage_Sales_Model_Order::STATE_NEW);
                     if(!$order->canCancel()){
-                        $this->log("I couldn't cancel order#" . $order->getIncrementId());
+                        $this->log("Unable to cancel order. Order #" . $order->getIncrementId());
                     }else{
-                        $this->log("expired order");
+                        $this->log("Order expired");
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($id);
                         $order->addStatusToHistory(
                             $this->getFailedStatus(),
-                            "expired invoice , invoice #{$id}",
+                            "Invoice expired. Invoice #{$id}",
                             true
                         );
                         $order->cancel();
                         $order->save();
-                        $this->log("I canceled order#" . $order->getIncrementId());
+                        $this->log("Order cancelled. Order #" . $order->getIncrementId());
                     }
                     break;
                 default:
@@ -534,7 +534,7 @@
             if (!$this->order) {
                 $session = Mage::getSingleton('checkout/session');
                 if (!$session->getLastRealOrderId()) {
-                    throw new \Exception(" order Id can't be null ", 500);
+                    throw new \Exception("Order id can't be null ", 500);
                 }
                 $order       = Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
                 $this->order = $order;

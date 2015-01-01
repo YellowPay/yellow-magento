@@ -56,7 +56,7 @@
             $logo->setTemplate('bitcoin/form/logo.phtml');
             $this->setTemplate('bitcoin/form/bitcoin.phtml')
                 ->setRedirectMessage(
-                    Mage::helper('bitcoin')->__('You will be Pay via Yellow')
+                    Mage::helper('bitcoin')->__('You will be paid via Yellow')
                 )
                 ->setMethodTitle('')
                 ->setMethodLabelAfterHtml($logo->toHtml() . $guide);

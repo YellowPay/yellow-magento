@@ -39,12 +39,12 @@
             /**
              * return not found on all requests but POST
              */
-            $this->log("-----------validate an IPN request precessing ------------");
+            $this->log("----------- IPN request validation ------------");
             if (!$this->getRequest()->isPost()) {
                 return $this->returnForbidden();
             }
             $ip                = long2ip(Mage::helper('core/http')->getRemoteAddr(true));
-            $this->log("Start to validate IPN ") ;
+            $this->log("Start IPN request validation") ;
             $this->log("IP Address of the sender {$ip}");
 
             /* start to validate the signature */
@@ -56,10 +56,10 @@
             $this->log("API-KEY:{$public_key}");
             $this->log("API-Nonce:{$nonce}");
             $this->log("API-Sign:{$request_signature}");
-            $this->log("received payload : " . $payload);
+            $this->log("Received payload: " . $payload);
 
             if (!$public_key || !$nonce || !$request_signature || !$payload) {
-                $this->log("one of the key info is missing , will exit now ");
+                $this->log("Credentials missing. Exiting.");
                 return $this->returnForbidden();
             }
 
@@ -69,13 +69,13 @@
             $url                 = Mage::helper('core/url')->getCurrentUrl();
             $message             = $nonce . $url . $payload;
             $current_signature = hash_hmac("sha256", $message, $private_key, false);
-            $this->log("calculated Signature : " . $current_signature);
+            $this->log("Calculated signature: " . $current_signature);
 
             if ($request_signature <> $current_signature) {
-                $this->log("VALIDATION FAILED");
-                $this->log("I will exit and return not found page");
-                $this->log("Your payment data still safe ");
-                $this->log("----------- skipped the IPN request proccessing ---------------------");
+                $this->log("IPN VALIDATION FAILED");
+                $this->log("Returning 'page not found'");
+                $this->log("Your payment data is still safe");
+                $this->log("----------- IPN request processing will be skipped -----------");
                 return $this->returnForbidden();
             }
             $this->log("VALIDATION PASSED :) Yay");
@@ -83,12 +83,12 @@
             /* by this the request has passed validation */
             try {
                 /* need to check the ip address of the source from a whitelist list of ips , otherwise this might be used illegaly to update orders  */
-                $this->log("-----------start an IPN request precessing ------------");
+                $this->log("----------- IPN request processing ------------");
                 $id   = base64_decode($this->getRequest()->getParam("id"));
                 //$data = file_get_contents('php://input');
                 $body = json_decode($payload, true);
-                $this->log("Id is :{$id}");
-                $this->log("I had received this data :" . $payload);
+                $this->log("Id is: {$id}");
+                $this->log("Received payload: " . $payload);
                 $url = $body["url"];
                 /* simple validation check | might be changed later */
                 $collection = Mage::getModel("bitcoin/ipn")
@@ -109,8 +109,8 @@
                         $this->log("its an order");
                     }
                 } else {
-                    $this->log("the validation has failed , url : {$url}");
-                    $this->log("----------- skipped the IPN request proccessing ---------------------");
+                    $this->log("URL validation failed: {$url}");
+                    $this->log("----------- IPN request processing will be skipped -----------");
                     return $this->_forward("no-route");
                 }
                 if ($from_order) {
@@ -122,10 +122,10 @@
                 /* skip quote + authorizing state because the order hasn't been placed yet */
                 if ($from_quote && $body["status"] === "authorizing") {
                     $this->log(
-                        " quote id : {$id} is skipped because the order hasn't placed yet , IPN status {$body["status"]}"
+                        "Quote id {$id} will be skipped because the order hasn't been placed yet. IPN status: {$body["status"]}"
                     );
                     echo json_encode(array("message" => "skipped"));
-                    $this->log("----------- skipped the IPN request proccessing ---------------------");
+                    $this->log("----------- IPN request processing will be skipped -----------");
                     return;
                 }
                 if ($order->getPayment() instanceof Yellow_Bitcoin_Model_Bitcoin) {
@@ -133,8 +133,8 @@
                     if (!$order || $payment->getCode() <> "bitcoin" || $order->getState(
                         ) <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW
                     ) {
-                        $this->log("either this order is not paid via Yellow , or it had unallowed state ");
-                        $this->log("----------- skipped the IPN request proccessing ---------------------");
+                        $this->log("Either this order is not paid via Yellow, or it has an unallowed state");
+                        $this->log("----------- IPN request processing will be skipped -----------");
                         return $this->_forward("no-route");
                     }
                 }
@@ -142,7 +142,7 @@
                 switch ($body['status']) {
                     case 'paid':
                         $status         = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
-                        $status_message = "Payment confirmation received , invoice Id : " . $body['id']; // $invoice["message"];
+                        $status_message = "Payment confirmation received. Invoice Id: " . $body['id']; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                         $order->sendNewOrderEmail();
@@ -152,19 +152,19 @@
                         $invoiceModel = Mage::getModel('sales/order_invoice_api');
                         $invoice_id   = $invoiceModel->create($order->getIncrementId(), array());
                         $invoiceModel->capture($invoice_id);
-                        $this->log("Magento Invoice created !");
+                        $this->log("Magento Invoice created!");
                         break;
                     case 'reissue':
                         $status         = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(
                         ); /// this must bn changed when we had reissue / renew payment ready
-                        $status_message = " client has re issued the invoice , invoice Id : " . $body['id']; // $invoice["message"];
+                        $status_message = "Client re-issued the invoice. Invoice Id: " . $body['id']; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->save();
                         break;
                     case 'partial':
                         $status         = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(
                         ); /// this must bn changed when we had partail payment ready
-                        $status_message = " client paid but payment is partial , invoice Id : " . $body['id']; // $invoice["message"];
+                        $status_message = "Client made a partial payment. Invoice Id: " . $body['id']; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->save();
                         Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
@@ -172,7 +172,7 @@
                     case 'failed':
                     case 'invalid':
                         $status         = Mage::getModel("bitcoin/bitcoin")->getFailedStatus();
-                        $status_message = " client failed to pay , invoice Id : " . $body['id']; // $invoice["message"];
+                        $status_message = "Client failed to pay. Invoice Id: " . $body['id']; // $invoice["message"];
                         $order->addStatusToHistory($status, $status_message);
                         $order->setState(Mage_Sales_Model_Order::STATE_HOLDED);
                         $order->cancel();
@@ -200,7 +200,7 @@
                         break;
                 }
                 echo json_encode(array("message" => "done"));
-                $this->log("----------- finished an IPN request proccessing ---------------------");
+                $this->log("----------- IPN request processing complete -----------");
             } catch (\Exception $e) {
                 $this->log("EXCEPTION:" . $e->getMessage . "|" . $e->getLine());
             }
@@ -215,14 +215,14 @@
                 $order = $this->getOrder();
                 if (!$order) {
                     $this->log(
-                        "this session doesn't has a recent order , maybe he/she is accessing this page directly"
+                        "This session does not have a recent order. This page may have been accessed directly."
                     );
                     return $this->_forward("no-route");
                 }
                 $model->setOrder($order);
                 $status = $model->checkInvoiceStatus($id);
                 if ($status == false) {
-                    $this->log("failed to check invoice status");
+                    $this->log("Invoice status check failed");
                     return $this->_forward("no-route");
                 }
                 switch ($status) {
@@ -244,12 +244,12 @@
                         return $this->_redirect('checkout/onepage/failure');
                         break;
                     default:
-                        $this->log("unknown invoice status , invoice id : {$id}");
+                        $this->log("Unknown invoice status. Invoice id: {$id}");
                         return $this->_forward("no-route");
                         break;
                 }
             } catch (Mage_Core_Exception $e) {
-                $this->log("an error occurred : {$e->getMessage()} on line {$e->getLine()}");
+                $this->log("An error occurred: {$e->getMessage()} on line {$e->getLine()}");
                 return $this->_redirect('checkout/onepage/failure');
             }
         }
