@@ -1,4 +1,5 @@
-<?php if($this->isFullScreen()):?>
+<?php
+if(Mage::helper("bitcoin")->isFullScreen()):?>
     <ul class="form-list checkout-agreements" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
         <li>
             <div class="<?php echo $this->getMethodCode() ?>-instructions-content agreement-content">

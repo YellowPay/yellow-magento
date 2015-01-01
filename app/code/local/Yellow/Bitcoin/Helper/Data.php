@@ -27,5 +27,13 @@
      **/
     class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
     {
+        /**
+         * check if the fullscreen setting is set to yes / no
+         * @return bool
+         */
+        public function isFullScreen()
+        {
+            return ( Mage::getStoreConfig('payment/bitcoin/fullscreen') == 1 );
+        }
 
     }

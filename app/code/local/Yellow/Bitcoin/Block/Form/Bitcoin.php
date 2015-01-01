@@ -46,7 +46,8 @@
             $class = Mage::getConfig()->getBlockClassName('core/template');
 
             $guide = "";
-            if($this->isFullScreen()){
+
+            if(Mage::helper("bitcoin")->isFullScreen()){
                 $guide = new $class;
                 $guide->setTemplate("bitcoin/form/bitcoin.phtml");
                 $guide = $guide->toHtml();
@@ -76,15 +77,6 @@
                 $this->_instructions = $this->getMethod()->getInstructions();
             }
             return $this->_instructions;
-        }
-
-        /**
-         * check if the fullscreen setting is set to yes / no
-         * @return bool
-         */
-        public function isFullScreen()
-        {
-            return ( Mage::getStoreConfig('payment/bitcoin/fullscreen') == 1 );
         }
 
     }
