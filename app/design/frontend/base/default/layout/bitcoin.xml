@@ -19,6 +19,9 @@
             <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name><params/></action>
         </reference>
         <reference name="content">
+            <block type="cms/block" name="yellow-invoice-custom-css">
+                <action method="setBlockId"><block_id>yellow-invoice-custom-css</block_id></action>
+            </block>
             <block type="bitcoin/fullscreen_widget_content" name="widget_content" template="bitcoin/fullscreen/widget/content.phtml"/>
         </reference>
     </bitcoin_index_pay>
