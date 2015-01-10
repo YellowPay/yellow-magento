@@ -38,6 +38,8 @@
          */
         protected $_instructions;
 
+        const CSS_BLOCK_ID = "yellow-checkout-custom-css";
+
         /**
          * Block construction. Set block template.
          */
@@ -53,6 +55,21 @@
                 $guide = $guide->toHtml();
             }
 
+            try {
+                $css_block = Mage::getModel('cms/block')->setStoreId(Mage::app()->getStore()->getId())->load(self::CSS_BLOCK_ID);
+                if($css_block->getData("is_active") == 1 ){
+                    $css_output = $css_block->getData("content");
+                }else{
+                    $css_output = "";
+                }
+            }catch ( \Exception $e){
+                $css_output = "";
+                Mage::log($e->getMessage() . __LINE__ . " on  " . __FILE__ , null , "yellow.log");
+                Mage::log($e->getTraceAsString() . __LINE__ . " on  " . __FILE__ , null , "yellow.log");
+            }
+
+
+
             $logo = new $class;
             $logo->setTemplate('bitcoin/form/logo.phtml');
             $this->setTemplate('bitcoin/form/bitcoin.phtml')
@@ -60,7 +77,7 @@
                     Mage::helper('bitcoin')->__('You will be paid via Yellow')
                 )
                 ->setMethodTitle('')
-                ->setMethodLabelAfterHtml($logo->toHtml() . $guide);
+                ->setMethodLabelAfterHtml($css_output . $logo->toHtml() . $guide);
 
             return parent::_construct();
         }
