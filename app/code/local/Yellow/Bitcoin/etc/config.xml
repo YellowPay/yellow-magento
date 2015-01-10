@@ -103,7 +103,7 @@ SOFTWARE.
                 <active>1</active>
                 <model>bitcoin/bitcoin</model>
                 <!--<order_status>pending</order_status>-->
-                <title>Pay with Bitcoin (powered by Yellow)</title>
+                <title></title>
                 <fullscreen>0</fullscreen>
                 <!--<instructions>Pay With Bitcoin</instructions>-->
                 <allowspecific>0</allowspecific>

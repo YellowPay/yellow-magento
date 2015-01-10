@@ -51,11 +51,11 @@
     height: 65px;
 }
 
-#yp-fullpage-header .yp-header-logo .logo-img
+#yp-fullpage-header .yp-header-logo > a > .logo-img
 {
-    max-width: 150px;
+    max-height: 60px;
+    max-width: 300px;
     min-width: 1px;
-    max-height: 65px;
     min-height: 1px;
     margin: auto;
 }
