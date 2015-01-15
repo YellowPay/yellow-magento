@@ -49,6 +49,12 @@
     padding-right: 20px;
     position: relative;
     height: 65px;
+    display: table;
+}
+
+#yp-fullpage-header .yp-header-logo > a {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 #yp-fullpage-header .yp-header-logo > a > .logo-img
