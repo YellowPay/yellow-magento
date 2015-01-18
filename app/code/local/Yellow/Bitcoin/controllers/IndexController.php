@@ -89,7 +89,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             //$data = file_get_contents('php://input');
             $body = json_decode($payload, true);
             $this->log("Id is: {$id}");
-            $this->log("Received payload: " . $payload);
+            $this->log("Received payload: " . $payload  , $body["id"]);
             $url = $body["url"];
             /* simple validation check | might be changed later */
             $collection = Mage::getModel("bitcoin/ipn")
@@ -103,15 +103,15 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                 if ($yellow_log[0]["quote_id"] === $id) {
                     $from_quote = true;
                     $from_order = false;
-                    $this->log("its a quote");
+                    $this->log("its a quote" , $body["id"]);
                 } elseif ($yellow_log[0]["order_id"] === $id) {
                     $from_quote = false;
                     $from_order = true;
-                    $this->log("its an order");
+                    $this->log("its an order"  , $body["id"]);
                 }
             } else {
                 $this->log("URL validation failed: {$url}");
-                $this->log("----------- IPN request processing will be skipped -----------");
+                $this->log("----------- IPN request processing will be skipped -----------" , $body["id"]);
                 return $this->_forward("no-route");
             }
             if ($from_order) {
@@ -123,18 +123,19 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             /* skip quote + authorizing state because the order hasn't been placed yet */
             if ($from_quote && $body["status"] === "authorizing") {
                 $this->log(
-                    "Quote id {$id} will be skipped because the order hasn't been placed yet. IPN status: {$body["status"]}"
+                    "Quote id {$id} will be skipped because the order hasn't been placed yet. IPN status: {$body["status"]}",
+                    $body["id"]
                 );
                 echo json_encode(array("message" => "skipped"));
-                $this->log("----------- IPN request processing will be skipped -----------");
+                $this->log("----------- IPN request processing will be skipped -----------" , $body["id"]);
                 return;
             }
             if ($order->getPayment() instanceof Yellow_Bitcoin_Model_Bitcoin) {
                 $payment = $order->getPayment()->getMethodInstance();
                 if (!$order || $payment->getCode() <> "bitcoin" || $order->getState() <> Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW
                 ) {
-                    $this->log("Either this order is not paid via Yellow, or it has an unallowed state");
-                    $this->log("----------- IPN request processing will be skipped -----------");
+                    $this->log("Either this order is not paid via Yellow, or it has an unallowed state" , $body["id"]);
+                    $this->log("----------- IPN request processing will be skipped -----------" , $body["id"]);
                     return $this->_forward("no-route");
                 }
             }
@@ -198,9 +199,9 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                     break;
             }
             echo json_encode(array("message" => "done"));
-            $this->log("----------- IPN request processing complete -----------");
+            $this->log("----------- IPN request processing complete -----------" , $body["id"]);
         } catch (\Exception $e) {
-            $this->log("EXCEPTION:" . $e->getMessage . "|" . $e->getLine());
+            $this->log("EXCEPTION:" . $e->getMessage . "|" . $e->getLine() , $body["id"]);
         }
     }
 
@@ -213,15 +214,16 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             $order = $this->getOrder();
             if (!$order) {
                 $this->log(
-                    "This session does not have a recent order. This page may have been accessed directly."
+                    "This session does not have a recent order. This page may have been accessed directly or sessions were cleared somehow.",
+                    $id
                 );
-                return $this->_forward("no-route");
+                return $this->returnForbidden();
             }
             $model->setOrder($order);
             $status = $model->checkInvoiceStatus($id);
             if ($status == false) {
-                $this->log("Invoice status check failed");
-                return $this->_forward("no-route");
+                $this->log("Invoice status check failed" , $id);
+                return $this->returnForbidden();
             }
             switch ($status) {
                 case "new":
@@ -243,12 +245,12 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                     return $this->_redirect('checkout/onepage/failure');
                     break;
                 default:
-                    $this->log("Unknown invoice status. Invoice id: {$id}");
+                    $this->log("Unknown invoice status. Invoice id: {$id}" , $id);
                     return $this->_forward("no-route");
                     break;
             }
         } catch (Mage_Core_Exception $e) {
-            $this->log("An error occurred: {$e->getMessage()} on line {$e->getLine()}");
+            $this->log("An error occurred: {$e->getMessage()} on line {$e->getLine()}" , $id);
             return $this->_redirect('checkout/onepage/failure');
         }
     }
