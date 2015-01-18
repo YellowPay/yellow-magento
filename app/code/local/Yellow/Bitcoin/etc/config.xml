@@ -55,6 +55,9 @@ SOFTWARE.
                     <ipn>
                         <table>yellow_ipn</table>
                     </ipn>
+                    <log>
+                        <table>yellow_log</table>
+                    </log>
                 </entities>
             </bitcoin_resource>
         </models>
@@ -97,6 +100,74 @@ SOFTWARE.
             </updates>
         </layout>
     </frontend>
+
+    <admin>
+        <routers>
+            <bitcoin>
+                <use>admin</use>
+                <args>
+                    <module>Yellow_Bitcoin</module>
+                    <frontName>bitcoin</frontName>
+                </args>
+            </bitcoin>
+        </routers>
+    </admin>
+    <adminhtml>
+        <menu>
+            <system>
+                <children>
+                    <bitcoin module="bitcoin">
+                        <title>Yellow Bitcoin</title>
+                        <sort_order>1</sort_order>
+                        <children>
+                            <log module="bitcoin">
+                                <title>View Log</title>
+                                <sort_order>0</sort_order>
+                                <action>bitcoin/adminhtml_log</action>
+                            </log>
+                            <ipn module="bitcoin">
+                                <title>View Ipn List</title>
+                                <sort_order>10</sort_order>
+                                <action>bitcoin/adminhtml_ipn</action>
+                            </ipn>
+                        </children>
+                    </bitcoin>
+                </children>
+            </system>
+        </menu>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <bitcoin translate="title" module="bitcoin">
+                            <title>Yellow Bitcoin</title>
+                            <sort_order>1000</sort_order>
+                            <children>
+                                <log translate="title">
+                                    <title>Manage Log</title>
+                                    <sort_order>0</sort_order>
+                                </log>
+                                <ipn translate="title">
+                                    <title>Manage Ipn</title>
+                                    <sort_order>10</sort_order>
+                                </ipn>
+                            </children>
+                        </bitcoin>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <layout>
+            <updates>
+                <bitcoin>
+                    <file>bitcoin.xml</file>
+                </bitcoin>
+            </updates>
+        </layout>
+    </adminhtml>
     <default>
         <payment>
             <bitcoin>
@@ -111,6 +182,7 @@ SOFTWARE.
                 <public_key></public_key>
                 <private_key></private_key>
                 <payment_action>authorize</payment_action>
+                <db_log>0</db_log>
             </bitcoin>
         </payment>
     </default>

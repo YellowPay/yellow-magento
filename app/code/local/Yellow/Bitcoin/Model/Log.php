@@ -24,28 +24,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- **/
-class Yellow_Bitcoin_Block_Fullscreen_Widget_Content extends Yellow_Bitcoin_Block_Widget
+ * */
+Class Yellow_Bitcoin_Model_Log extends Mage_Core_Model_Abstract
 {
-    /**
-     * create an invoice & return the url of it
-     * @return string
-     */
-    public function GetWidgetUrl()
+
+    const DATABASE_ENABLED_CONFIG_PATH = "payment/bitcoin/db_log";
+
+    public function _construct()
     {
-        $order_id = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-        $order = Mage::getModel("sales/order")->loadByIncrementId($order_id);
-        if (!($order)
-            or !($payment = $order->getPayment())
-            or !($instance = $payment->getMethodInstance())
-            or ($instance->getCode() != 'bitcoin')
-        ) {
-            return 'no payment';
-        }
-        if (Mage::getStoreConfig('payment/bitcoin/fullscreen') != 1) {
-            return 'disabled';
-        }
-        $invoice = $instance->getInvoiceData();
-        return $invoice['url'];
+        $this->_init('bitcoin/log');
+        return parent::_construct();
     }
+
+
+    /**
+     * log message to database
+     * @param $message
+     * @param null $invoice_id
+     * @return bool|record id
+     */
+    public function logMessage($message, $invoice_id = null)
+    {
+        $enabled = Mage::getStoreConfig(self::DATABASE_ENABLED_CONFIG_PATH);
+        if ($enabled == true) {
+            $timezone = Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE);
+            $now = new \DateTime("now", new \DateTimeZone($timezone));
+            $this->setData("message", $message);
+            $this->setData("created_at", $now->format("Y-m-d H:i:s"));
+            if ($invoice_id) {
+                $this->setData("invoice_id", $invoice_id);
+            }
+            $this->save();
+            return $this->getData("id");
+        } else {
+            return false;
+        }
+    }
+
+
 }

@@ -1,56 +1,56 @@
 <div id="yp-fullpage-container">
-    <?php echo $this->getLayout()->createBlock('bitcoin/fullscreen_widget_header')->setTemplate("bitcoin/fullscreen/widget/header.phtml")->toHtml();?>
+    <?php echo $this->getLayout()->createBlock('bitcoin/fullscreen_widget_header')->setTemplate("bitcoin/fullscreen/widget/header.phtml")->toHtml(); ?>
     <div id="yp-invoice-body">
         <?php
-            $url = $this->GetWidgetUrl();
-            $iframe = false;
-            switch ($url) {
-                case 'no payment':
-                case 'disabled':
-                    $iframe = false;
-                    break;
-                case 'paid':
-                    echo 'Order payment received.  Place Order to complete.';
-                    $iframe = false;
-                    break;
-                case false:
-                    echo 'Error creating invoice. Please try again or try another payment solution.';
-                    $iframe = false;
-                    break;
-                default:
-                    $iframe = '<iframe src="' . $url . '" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
-                    break;
-            }
-            if ($iframe): echo $iframe;?>
-                <script type="text/javascript">
-                    function invoiceListener(event) {
-                        console.log(event);
-                        if (event.origin != "https://yolanda-perkins.herokuapp.com" && /\.yellowpay\.co$/.test(event.origin) == false ) {
-                            alert("Received message from unexpected domain: " + event.origin);
-                            return;
-                        }
-                        switch (event.data) {
-                            case "authorizing":
-                            case "paid":
-                                window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
-                                break;
-                            case "expired":
-                            case "refund_requested":
-                                window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
-                                break;
-                            default:
-                                alert("unknown order status :" + event.data);
-                                break;
-                        }
+        $url = $this->GetWidgetUrl();
+        $iframe = false;
+        switch ($url) {
+            case 'no payment':
+            case 'disabled':
+                $iframe = false;
+                break;
+            case 'paid':
+                echo 'Order payment received.  Place Order to complete.';
+                $iframe = false;
+                break;
+            case false:
+                echo 'Error creating invoice. Please try again or try another payment solution.';
+                $iframe = false;
+                break;
+            default:
+                $iframe = '<iframe src="' . $url . '" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
+                break;
+        }
+        if ($iframe): echo $iframe; ?>
+            <script type="text/javascript">
+                function invoiceListener(event) {
+                    console.log(event);
+                    if (event.origin != "https://yolanda-perkins.herokuapp.com" && /\.yellowpay\.co$/.test(event.origin) == false) {
+                        alert("Received message from unexpected domain: " + event.origin);
+                        return;
                     }
-                    // Attach the message listener
-                    if (window.addEventListener) {
-                        addEventListener("message", invoiceListener, false)
-                    } else {
-                        attachEvent("onmessage", invoiceListener)
+                    switch (event.data) {
+                        case "authorizing":
+                        case "paid":
+                            window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
+                            break;
+                        case "expired":
+                        case "refund_requested":
+                            window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
+                            break;
+                        default:
+                            alert("unknown order status :" + event.data);
+                            break;
                     }
-                </script>
-            <?php endif; ?>
+                }
+                // Attach the message listener
+                if (window.addEventListener) {
+                    addEventListener("message", invoiceListener, false)
+                } else {
+                    attachEvent("onmessage", invoiceListener)
+                }
+            </script>
+        <?php endif; ?>
     </div>
-    <?php echo $this->getLayout()->createBlock('bitcoin/fullscreen_widget_footer')->setTemplate("bitcoin/fullscreen/widget/footer.phtml")->toHtml();?>
+    <?php echo $this->getLayout()->createBlock('bitcoin/fullscreen_widget_footer')->setTemplate("bitcoin/fullscreen/widget/footer.phtml")->toHtml(); ?>
 </div>

@@ -1,34 +1,39 @@
-<?php $storeName = $this->getStoreName()?>
-<?php $invoice   = $this->getInvoiceData();?>
-<?php $order     = $this->getLastOrder();?>
+<?php $storeName = $this->getStoreName() ?>
+<?php $invoice = $this->getInvoiceData(); ?>
+<?php $order = $this->getLastOrder(); ?>
 <?php //$invoice = array("invoice_ccy" =>  "invoice_ccy" , "invoice_price" => "invoice_price" , "base_ccy" => "base_ccy" , "base_price" => "base_price");?>
 <div id="yp-fullpage-footer">
-    <div id="yp-fullpage-yellow-bar"><div class="yp-bar"></div></div>
+    <div id="yp-fullpage-yellow-bar">
+        <div class="yp-bar"></div>
+    </div>
     <div id="yp-fullpage-footer-content" class="clearfix">
         <div id="yp-fullpage-invoice">
-            <div class="yp-normal-text"><?php echo $this->__("Order# %s" , $order->getIncrementId());?></div>
+            <div class="yp-normal-text"><?php echo $this->__("Order# %s", $order->getIncrementId()); ?></div>
             <div class="yp-vertical-space-10"></div>
-            <div class="yp-normal-text"><?php echo $this->__("Amount Due :");?></div>
-            <div class="yp-bolder-text"><?php echo $this->__($invoice["invoice_ccy"]);?> <?php echo $this->__("{$invoice["invoice_price"]}"); ?> </div>
+            <div class="yp-normal-text"><?php echo $this->__("Amount Due :"); ?></div>
+            <div
+                class="yp-bolder-text"><?php echo $this->__($invoice["invoice_ccy"]); ?> <?php echo $this->__("{$invoice["invoice_price"]}"); ?> </div>
             <div class="yp-vertical-space-10"></div>
-            <div id="yp-info"><?php echo $this->__($invoice["invoice_ccy"]);?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?> = <?php echo $this->__($invoice["base_ccy"]);?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></div>
+            <div
+                id="yp-info"><?php echo $this->__($invoice["invoice_ccy"]); ?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?>
+                = <?php echo $this->__($invoice["base_ccy"]); ?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></div>
         </div>
         <div id="yp-fullpage-info">
-            <div class="yp-bolder-text"><?php echo $this->__("%s is proud to accept Bitcoin!" , $storeName);?></div>
+            <div class="yp-bolder-text"><?php echo $this->__("%s is proud to accept Bitcoin!", $storeName); ?></div>
             <div class="yp-vertical-space-10"></div>
             <div class="yp-normal-text yp-email-field">
                 <span class="icon-mail2 yp-icon"></span>
-                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getContactEmail());?></span>
+                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getContactEmail()); ?></span>
             </div>
             <div class="yp-vertical-space-20"></div>
             <div class="yp-bolder-text"><p><?php echo $this->__($this->getCustomerName()); ?></p></div>
             <address>
-                <?php echo $this->getBillingAddress();?>
+                <?php echo $this->getBillingAddress(); ?>
             </address>
             <div class="yp-vertical-space-10"></div>
             <div class="yp-normal-text yp-email-field">
                 <span class="icon-mail2 yp-icon"></span>
-                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getCustomerEmail());?></span>
+                <span class=“yp-email-addr"><?php echo $this->escapeHtml($this->getCustomerEmail()); ?></span>
             </div>
         </div>
     </div>

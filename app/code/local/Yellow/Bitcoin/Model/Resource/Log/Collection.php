@@ -25,27 +25,12 @@
  * SOFTWARE.
  *
  **/
-class Yellow_Bitcoin_Block_Fullscreen_Widget_Content extends Yellow_Bitcoin_Block_Widget
+class Yellow_Bitcoin_Model_Resource_Log_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
-    /**
-     * create an invoice & return the url of it
-     * @return string
-     */
-    public function GetWidgetUrl()
+
+    protected function _construct()
     {
-        $order_id = Mage::getSingleton('checkout/session')->getLastRealOrderId();
-        $order = Mage::getModel("sales/order")->loadByIncrementId($order_id);
-        if (!($order)
-            or !($payment = $order->getPayment())
-            or !($instance = $payment->getMethodInstance())
-            or ($instance->getCode() != 'bitcoin')
-        ) {
-            return 'no payment';
-        }
-        if (Mage::getStoreConfig('payment/bitcoin/fullscreen') != 1) {
-            return 'disabled';
-        }
-        $invoice = $instance->getInvoiceData();
-        return $invoice['url'];
+        $this->_init('bitcoin/log');
     }
+
 }

@@ -1,9 +1,9 @@
 <?php
-    $installer = $this;
-    $installer->startSetup();
+$installer = $this;
+$installer->startSetup();
 
-    $installer->run(
-        "
+$installer->run(
+    "
 CREATE TABLE IF NOT EXISTS `{$installer->getTable('bitcoin/ipn')}` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `quote_id` int(10) unsigned default NULL,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `{$installer->getTable('bitcoin/ipn')}` (
   KEY `invoice_id` (`invoice_id`)
 ) ENGINE=INNODB  DEFAULT CHARSET=utf8 ;
 "
-    );
+);
 
-    $installer->endSetup();
+$installer->endSetup();
 	 

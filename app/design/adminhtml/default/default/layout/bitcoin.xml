@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <bitcoin_adminhtml_log_index>
+        <reference name="content">
+            <block type="bitcoin/adminhtml_log" name="bitcoin_log"/>
+        </reference>
+    </bitcoin_adminhtml_log_index>
+    <bitcoin_adminhtml_ipn_index>
+        <reference name="content">
+            <block type="bitcoin/adminhtml_ipn" name="btcoin_ipn"/>
+        </reference>
+    </bitcoin_adminhtml_ipn_index>
+</layout>

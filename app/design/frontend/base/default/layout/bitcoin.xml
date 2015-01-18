@@ -7,28 +7,39 @@
     </checkout_onepage_review>
     <bitcoin_index_pay>
         <reference name="root">
-            <action method="addBodyClass"><classname></classname></action>
-            <remove name="left" />
-            <remove name="right" />
+            <action method="addBodyClass">
+                <classname></classname>
+            </action>
+            <remove name="left"/>
+            <remove name="right"/>
             <action method="setTemplate">
                 <template>page/empty.phtml</template>
             </action>
         </reference>
         <reference name="head">
-            <action method="setTitle" translate="title"><title>Pay With Yellow</title></action>
-            <action method="addItem"><type>skin_css</type><name>css/bitcoin.css</name><params/></action>
+            <action method="setTitle" translate="title">
+                <title>Pay With Yellow</title>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>css/bitcoin.css</name>
+                <params/>
+            </action>
         </reference>
         <reference name="content">
             <block type="cms/block" name="yellow-invoice-custom-css">
-                <action method="setBlockId"><block_id>yellow-invoice-custom-css</block_id></action>
+                <action method="setBlockId">
+                    <block_id>yellow-invoice-custom-css</block_id>
+                </action>
             </block>
-            <block type="bitcoin/fullscreen_widget_content" name="widget_content" template="bitcoin/fullscreen/widget/content.phtml"/>
+            <block type="bitcoin/fullscreen_widget_content" name="widget_content"
+                   template="bitcoin/fullscreen/widget/content.phtml"/>
         </reference>
     </bitcoin_index_pay>
     <bitcoin_index_status>
         <reference name="root">
-            <remove name="left" />
-            <remove name="right" />
+            <remove name="left"/>
+            <remove name="right"/>
             <action method="setTemplate">
                 <template>page/empty.phtml</template>
             </action>
