@@ -1,0 +1,5 @@
+<img src="<?php echo $this->getSkinUrl('images/bitcoin/bitcoin_accepted.png', array('_secure' => true)); ?>"
+     alt="<?php echo Mage::helper('bitcoin')->__('Yellow Bitcoin') ?>" class="v-middle" style="height:35px;"/>
+<?php if ($url = $this->getInvoiceUrl()) :?>
+    <p><a href="<?php echo $url ; ?>" target="_blank"><?php echo $this->__("Invoice page");?></a></p>
+<?php  endif;?>

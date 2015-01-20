@@ -65,6 +65,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
      */
     protected $_formBlockType = 'bitcoin/form_bitcoin';
 
+    protected $_infoBlockType = 'bitcoin/info';
+
     /**
      * Server Root for Yellow API
      *
