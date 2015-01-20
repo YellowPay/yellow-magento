@@ -108,6 +108,8 @@ class Yellow_Bitcoin_Block_Adminhtml_Ipn_Grid extends Mage_Adminhtml_Block_Widge
 
     protected function _prepareMassaction()
     {
+        /// we don't need mass actions
+        return $this;
         $this->setMassactionIdField('id');
         $this->getMassactionBlock()->setFormFieldName('ids');
         $this->getMassactionBlock()->setUseSelectAll(true);
