@@ -372,6 +372,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                     "base_ccy" => $yellow_payment_data["base_ccy"],
                     "hash" => $hash
                 );
+                /// replace https with http on the invoice url in case the store doesn't have ssl certificate
+                $helper = Mage::helper("bitcoin");
+                if(!$helper->doesTheStoreHasSSL())
+                {
+                    $invoice_data["url"] = $helper->replaceHttps($data["url"]);
+                    $data["url"] = $helper->replaceHttps($data["url"]);
+                }
+
                 Mage::getModel("bitcoin/ipn")->saveInvoice($invoice_data);
                 /* end saving invoice */
                 Mage::getSingleton('core/session')->setData('invoice', $data);
@@ -611,7 +619,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
     {
         return Mage::getModel("sales/order_invoice_api")->capture($invoiceIncrementId);
     }
-
+    
     /**
      *
      * clear session data

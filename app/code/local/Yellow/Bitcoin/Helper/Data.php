@@ -28,12 +28,39 @@
 class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
 {
     /**
-     * check if the fullscreen setting is set to yes / no
+     * check if the fullScreen setting is set to yes / no
      * @return bool
      */
     public function isFullScreen()
     {
         return (Mage::getStoreConfig('payment/bitcoin/fullscreen') == 1);
+    }
+
+    /***
+     * does the secured url has https ONLY
+     * in another words : does the store has ssl certificate
+     * @return bool
+     */
+    public function doesTheStoreHasSSL()
+    {
+        $store_id    = Mage::app()->getStore()->getId();
+        $secured_url = Mage::getStoreConfig("web/secure/base_url" , $store_id);
+        preg_match("/^https:\/\//" , $secured_url , $matches);
+        if(count($matches) == 1 ){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * replace https with http in case the store doesn't have ssl certificate
+     * @param $url
+     * @return mixed
+     */
+    public function replaceHttps($url)
+    {
+        return str_replace("https://" , "http://" , $url);
     }
 
 }
