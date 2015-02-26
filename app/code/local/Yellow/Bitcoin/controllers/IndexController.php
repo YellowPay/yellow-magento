@@ -77,7 +77,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             $this->log("Returning 'page not found'");
             $this->log("Your payment data is still safe");
             $this->log("----------- IPN request processing will be skipped -----------");
-            //return $this->returnForbidden();
+            return $this->returnForbidden();
         }
         $this->log("IPN signature validation succeeded");
         /* end of validate the signature  */
