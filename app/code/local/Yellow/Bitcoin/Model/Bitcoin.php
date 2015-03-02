@@ -92,6 +92,20 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
      * @type Mage_Sales_Model_Order
      **/
     private $order;
+    
+    
+    /**
+     * constructor method , it also allow to set custom API server
+     * MADE FOR DEVELOPERS Only
+     */
+    public function __construct()
+    {
+        $custom_server_root = getenv("YELLOW_SERVER");
+        if(!$custom_server_root){
+            $this->server_root = $custom_server_root;
+        }
+        return parent::__construct();
+    }
 
     /**
      * Check whether payment method can be used
