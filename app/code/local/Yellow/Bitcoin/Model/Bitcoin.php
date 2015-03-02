@@ -101,7 +101,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
     public function __construct()
     {
         $custom_server_root = getenv("YELLOW_SERVER");
-        if(!$custom_server_root){
+        if($custom_server_root){
             $this->server_root = $custom_server_root;
         }
         return parent::__construct();
