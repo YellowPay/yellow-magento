@@ -1,0 +1,152 @@
+<_>
+   <form_key>UNpQUobUBU9v9CYV</form_key>
+   <_create/>
+   <name>Yellow_Pay</name>
+   <channel>community</channel>
+   <version_ids>
+      <version_ids>2</version_ids>
+   </version_ids>
+   <summary>Accept payments in Bitcoin and have them automatically converted to your local currency</summary>
+   <description>Yellow is a bitcoin payment processor that enables merchants to accept bitcoin payments without any risk. Our product is an API based solution that is easy to integrate with all major e-commerce platforms, such as Magento, Wordpress and Drupal.
+
+With Yellow, online merchants can start accepting bitcoin payments with low-to-no merchant fees and receive timely settlements in their local currency.
+
+The below 6 steps explain how Bitcoin payments are processed by Yellow:
+
+1.
+The customer completes their shopping cart on the merchant&apos;;s site and proceeds to check out
+
+2.
+Yellow generates a unique, one-time-use Bitcoin address to accept payment which is then displayed on the merchant&apos;s site. 
+
+3.
+The address is displayed both in text and QR-code form.
+
+4.
+The customer sends payment (in Bitcoin) to the Bitcoin address, using either their smartphone Bitcoin wallet to scan the QR-code, or a web or desktop based Bitcoin wallet (e.g., blockchain.info, Bitcoin-QT)
+
+5.
+Bitcoin payment is received and the customer is redirected to an order confirmation page on the merchant&apos;s site
+
+6.
+Yellow converts the received Bitcoin payment into a national currency (like AED) and transfers it to the merchant&apos;s bank account</description>
+   <license>MITL</license>
+   <license_uri>https://github.com/YellowPay/yellow-magento/blob/master/LICENSE.md</license_uri>
+   <version>0.2.2</version>
+   <stability>stable</stability>
+   <notes>* Add option to view Yellow logs through the Admin panel
+* Styling and layout fixes for some store configurations
+* Fix for mixed-content display on older versions of IE</notes>
+   <authors>
+      <name>
+         <name>Tawfek Daghistani</name>
+         <name>James Piechota</name>
+      </name>
+      <user>
+         <user>tawfekov</user>
+         <user>YellowPay</user>
+      </user>
+      <email>
+         <email>tawfekov@gmail.com</email>
+         <email>james@yellowpay.co</email>
+      </email>
+   </authors>
+   <depends_php_min>5.3.0</depends_php_min>
+   <depends_php_max>6.0.0</depends_php_max>
+   <depends>
+      <package>
+         <name>
+            <name/>
+         </name>
+         <channel>
+            <channel/>
+         </channel>
+         <min>
+            <min/>
+         </min>
+         <max>
+            <max/>
+         </max>
+         <files>
+            <files>  </files>
+         </files>
+      </package>
+      <extension>
+         <name>
+            <name>Core</name>
+         </name>
+         <min>
+            <min/>
+         </min>
+         <max>
+            <max/>
+         </max>
+      </extension>
+   </depends>
+   <contents>
+      <target>
+         <target>magelocal</target>
+         <target>magelocal</target>
+         <target>magedesign</target>
+         <target>magedesign</target>
+         <target>magedesign</target>
+         <target>magedesign</target>
+         <target>mageetc</target>
+         <target>mageskin</target>
+         <target>mageskin</target>
+         <target>magelocal</target>
+      </target>
+      <path>
+         <path/>
+         <path>Yellow</path>
+         <path>adminhtml/default/default/layout/bitcoin.xml</path>
+         <path>adminhtml/default/default/template/bitcoin</path>
+         <path>frontend/base/default/layout/bitcoin.xml</path>
+         <path>frontend/base/default/template</path>
+         <path>modules/Yellow_Bitcoin.xml</path>
+         <path>adminhtml/base/default/images/bitcoin</path>
+         <path>frontend/base/default/css/bitcoin.css</path>
+         <path>frontend/base/default/images/bitcoin</path>
+      </path>
+      <type>
+         <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>dir</type>
+      </type>
+      <include>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+      </include>
+      <ignore>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+      </ignore>
+   </contents>
+   <page>1</page>
+   <limit>200</limit>
+   <folder/>
+   <package/>
+</_>
