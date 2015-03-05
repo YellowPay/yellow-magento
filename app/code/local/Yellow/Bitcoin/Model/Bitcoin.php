@@ -317,6 +317,10 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         }
     }
 
+    /**
+     * return invoice data from session
+     * @return mixed
+     */
     public function getInvoiceData()
     {
         return Mage::getSingleton('core/session')->getData("invoice");
@@ -663,6 +667,15 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         }
         Mage::log($message, Zend_Log::ERR, "yellow.log");
         return true;
+    }
+
+    /***
+     * return the configured server root
+     * @return string
+     */
+    public function getConfiguredServerRoot()
+    {
+        return $this->server_root;
     }
 
 }

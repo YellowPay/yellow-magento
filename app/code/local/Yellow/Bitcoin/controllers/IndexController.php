@@ -91,7 +91,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             //$this->log("current Id is: {$id}");
             $this->log("Received payload: " . $payload, $body["id"]);
             $url = $body["url"];
-             $invoice_id = $body["id"];
+            $invoice_id = $body["id"];
             /* simple validation check | might be changed later */
             $collection = Mage::getModel("bitcoin/ipn")
                 ->getCollection()

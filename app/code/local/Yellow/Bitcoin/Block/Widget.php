@@ -29,7 +29,15 @@ class Yellow_Bitcoin_Block_Widget extends Mage_Checkout_Block_Onepage_Payment
 {
 
     /**
-     *
+     * a copy value from server root from bitcoin.php model
+     * just as read only
+     * @var
+     */
+    protected $server_root ;
+
+
+    /**
+     * constructor method
      **/
     protected function _construct()
     {
@@ -68,6 +76,16 @@ class Yellow_Bitcoin_Block_Widget extends Mage_Checkout_Block_Onepage_Payment
         $quote = $this->getQuote();
         $payment = $quote->getPayment()->getMethodInstance();
         $invoice = $payment->createInvoice($quote, false);
+        $this->server_root = $instance->getConfiguredServerRoot();
         return $invoice['url'];
+    }
+
+    /***
+     * return the configured server root
+     * @return string
+     */
+    public function getConfiguredServerRoot()
+    {
+        return $this->server_root;
     }
 }
