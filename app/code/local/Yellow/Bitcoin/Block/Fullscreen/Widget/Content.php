@@ -28,6 +28,13 @@
 class Yellow_Bitcoin_Block_Fullscreen_Widget_Content extends Yellow_Bitcoin_Block_Widget
 {
     /**
+     * a copy value from server root from bitcoin.php model
+     * just as read only
+     * @var
+     */
+    protected $server_root ;
+
+    /**
      * create an invoice & return the url of it
      * @return string
      */
@@ -46,6 +53,14 @@ class Yellow_Bitcoin_Block_Fullscreen_Widget_Content extends Yellow_Bitcoin_Bloc
             return 'disabled';
         }
         $invoice = $instance->getInvoiceData();
+        $this->server_root = $instance->getConfiguredServerRoot();
+
         return $invoice['url'];
+    }
+
+
+    public function getConfiguredServerRoot()
+    {
+        return $this->server_root ;
     }
 }

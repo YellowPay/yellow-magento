@@ -25,7 +25,11 @@
             <script type="text/javascript">
                 function invoiceListener(event) {
                     console.log(event);
-                    if (event.origin != "https://yolanda-perkins.herokuapp.com" && /\.yellowpay\.co$/.test(event.origin) == false) {
+                    var origin_pattern = "^" + event.origin.replace(/\./g, "\\.");
+                    var server_root = "<?php echo $this->getConfiguredServerRoot();?>";
+                    if (RegExp(origin_pattern).test(server_root) == false &&
+                    		    event.origin != "https://yolanda-perkins.herokuapp.com" && 
+                    		    RegExp("\\.yellowpay\\.co$").test(event.origin) == false) {
                         alert("Received message from unexpected domain: " + event.origin);
                         return;
                     }
