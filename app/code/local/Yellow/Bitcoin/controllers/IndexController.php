@@ -91,12 +91,13 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             //$this->log("current Id is: {$id}");
             $this->log("Received payload: " . $payload, $body["id"]);
             $url = $body["url"];
+             $invoice_id = $body["id"];
             /* simple validation check | might be changed later */
             $collection = Mage::getModel("bitcoin/ipn")
                 ->getCollection()
                 ->getSelect()
                 ->where("quote_id = ? OR order_id = ?", $id)
-                ->where("url =?", $url);
+                ->where("invoice_id =?", $invoice_id);
             $yellow_log = $collection->query()->fetchAll();
             $from_order = $from_quote = false;
             if (count($yellow_log) == 1) {
@@ -178,7 +179,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                     $order->save();
                     break;
                 /// its just a new invoice | authorizing , I will never expect a post with new status , though I had created the block of it
-                    case 'authorizing':
+                case 'authorizing':
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($body["id"]);
                     break;
                 case 'expired':
