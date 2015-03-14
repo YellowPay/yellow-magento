@@ -10,6 +10,11 @@ RUN echo "## Nginx proxy HTTPS fix for Magento 1.6.2.0" >> /var/www/.htaccess
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /var/www/.htaccess
 RUN echo "" >> /var/www/.htaccess
 
+WORKDIR /var/www/app/code/core/Mage/Core/Model/Session/Abstract/
+RUN mv Varien.php Varien.php.orig
+COPY Varien.php.fixed Varien.php 
+
+WORKDIR /
 COPY app /var/www/app/
 COPY skin /var/www/skin/
 RUN chmod o+w /var/www/app/etc
