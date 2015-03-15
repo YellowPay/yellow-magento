@@ -345,7 +345,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         $base_price = $quote->getData("grand_total");
         $base_ccy = $quote->getData($currency_code_key);
         $quote_id = $quote->getData("entity_id");
-        $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("_secure" => true, "id" => base64_encode($quote_id)));
+
+        /// create the ipn url based on the site configuration
+        if(Mage::helper("bitcoin")->doesTheStoreHasSSL()){
+            $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("_secure" => true, "id" => base64_encode($quote_id)));
+        }else{
+            $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("_secure" => false, "id" => base64_encode($quote_id)));
+        }
+
         $redirectUrl = "";
         /*if ($redirect) {
             $redirectUrl = Mage::getUrl("bitcoin/index/status");
@@ -661,7 +668,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
      */
     private function log($message, $invoice_id = null)
     {
-        $enabled = Mage::getStoreConfig(\Yellow_Bitcoin_Model_Log::DATABASE_ENABLED_CONFIG_PATH);
+        $enabled = Mage::getStoreConfig(Yellow_Bitcoin_Model_Log::DATABASE_ENABLED_CONFIG_PATH);
         if ($enabled) {
             Mage::getModel("bitcoin/log")->logMessage($message, $invoice_id);
         }

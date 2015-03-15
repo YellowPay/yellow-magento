@@ -281,7 +281,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
      */
     private function log($message, $invoice_id = null)
     {
-        $enabled = Mage::getStoreConfig(\Yellow_Bitcoin_Model_Log::DATABASE_ENABLED_CONFIG_PATH);
+        $enabled = Mage::getStoreConfig(Yellow_Bitcoin_Model_Log::DATABASE_ENABLED_CONFIG_PATH);
         if ($enabled) {
             Mage::getModel("bitcoin/log")->logMessage($message, $invoice_id);
         }
