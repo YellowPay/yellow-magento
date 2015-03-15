@@ -68,6 +68,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getModel("bitcoin/bitcoin")->getConfiguration("private_key")
         );
         $url = Mage::helper('core/url')->getCurrentUrl();
+        $this->log("CURRENT IPN URL IS : " .$url);
+
         $message = $nonce . $url . $payload;
         $current_signature = hash_hmac("sha256", $message, $private_key, false);
         $this->log("Calculated signature: " . $current_signature);

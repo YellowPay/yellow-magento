@@ -310,7 +310,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
     public function getOrderPlaceRedirectUrl()
     {
         if (Mage::getStoreConfig('payment/bitcoin/fullscreen')) {
-            $target_url = Mage::getUrl("bitcoin/index/pay");
+            if(Mage::helper("bitcoin")->doesTheStoreHasSSL()){
+                $target_url = Mage::getUrl("bitcoin/index/pay" , array("_secure" => true));
+            }else{
+                $target_url = Mage::getUrl("bitcoin/index/pay" , array("_secure" => false));
+            }
             return $target_url;
         } else {
             return '';
@@ -352,7 +356,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         }else{
             $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("_secure" => false, "id" => base64_encode($quote_id)));
         }
-
+        $this->log( "GENERATED IPN URL : " . $ipnUrl);
         $redirectUrl = "";
         /*if ($redirect) {
             $redirectUrl = Mage::getUrl("bitcoin/index/status");
