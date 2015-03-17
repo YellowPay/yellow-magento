@@ -37,7 +37,7 @@ class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /***
-     * does the secured url has https and use_ssl_in_frontend is set to yes
+     * does the secured url has https
      * in another words : does the store has ssl certificate
      * @return bool
      */
@@ -45,10 +45,8 @@ class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $store_id    = Mage::app()->getStore()->getId();
         $secured_url = Mage::getStoreConfig("web/secure/base_url" , $store_id);
-        $user_secured_url_in_checkout  = Mage::getStoreConfig("web/secure/use_in_frontend" , $store_id);
         preg_match("/^https:\/\//" , $secured_url , $matches);
-        /// this will check if the admin configured to use ssl on checkout + he really has ssl on his secure_url field
-        if(count($matches) == 1 && $user_secured_url_in_checkout == 1 ){
+        if(count($matches) == 1 ){
             return true;
         }
         return false;

@@ -42,6 +42,7 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
          */
         $this->log("----------- IPN request validation ------------");
         if (!$this->getRequest()->isPost()) {
+            $this->log("skip none POST requests");
             return $this->returnForbidden();
         }
         $ip = long2ip(Mage::helper('core/http')->getRemoteAddr(true));
