@@ -15,6 +15,7 @@ RUN mv Varien.php Varien.php.orig
 COPY Varien.php.fixed Varien.php 
 
 WORKDIR /
+COPY encrypt.php /usr/local/src/encrypt.php
 COPY app /var/www/app/
 COPY skin /var/www/skin/
 RUN chmod o+w /var/www/app/etc
