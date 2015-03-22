@@ -25,6 +25,10 @@
                 <name>css/bitcoin.css</name>
                 <params/>
             </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/iframeResizer.min.js</name>
+            </action>
         </reference>
         <reference name="content">
             <block type="cms/block" name="yellow-invoice-custom-css">
