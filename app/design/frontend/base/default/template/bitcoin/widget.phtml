@@ -15,7 +15,7 @@ switch ($url) {
         $iframe = false;
         break;
     default:
-        $iframe = '<iframe src="' . $url . '" style="width:500px; height:255px; overflow:hidden; border:none; margin:auto; display:block;" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
+        $iframe = '<iframe src="' . $url . '" style="width:100%; height:255px; overflow:hidden; border:none; margin:auto; display:block;" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
         break;
 }
 if ($iframe): echo $iframe; ?>
@@ -39,10 +39,12 @@ if ($iframe): echo $iframe; ?>
                 case "expired":
                 case "refund_requested":
                     break;
-                default:
-                    alert("unknown order status :" + event.data);
-                    break;
             }
+            iFrameResize({
+                log                     : false,
+                enablePublicMethods     : true
+            });
+
         }
         // Attach the message listener
         if (window.addEventListener) {

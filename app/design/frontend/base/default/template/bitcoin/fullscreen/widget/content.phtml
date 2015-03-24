@@ -18,7 +18,7 @@
                 $iframe = false;
                 break;
             default:
-                $iframe = '<iframe src="' . $url . '" scrolling="no" allowtransparency="true" frameborder="0"> </iframe>';
+                $iframe = '<iframe src="' . $url . '" scrolling="no" width="100%" allowtransparency="true" frameborder="0"> </iframe>';
                 break;
         }
         if ($iframe): echo $iframe; ?>
@@ -40,9 +40,6 @@
                         case "refund_requested":
                             window.location = "<?php echo Mage::getUrl("bitcoin/index/status");?>";
                             break;
-                        default:
-                            alert("unknown order status :" + event.data);
-                            break;
                     }
                 }
                 // Attach the message listener
@@ -51,6 +48,10 @@
                 } else {
                     attachEvent("onmessage", invoiceListener)
                 }
+                iFrameResize({
+                    log                     : false,
+                    enablePublicMethods     : true
+                });
             </script>
         <?php endif; ?>
     </div>

@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <layout version="0.1.0">
     <checkout_onepage_review>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/iframeResizer.min.js</name>
+            </action>
+        </reference>
         <reference name="checkout.onepage.review.info.items.after">
             <block name="yellow_widget" type="bitcoin/widget"/>
         </reference>
@@ -24,6 +30,10 @@
                 <type>skin_css</type>
                 <name>css/bitcoin.css</name>
                 <params/>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/iframeResizer.min.js</name>
             </action>
         </reference>
         <reference name="content">
