@@ -511,6 +511,19 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 $order->save();
                 Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
                 break;
+            case $data["status"] == "refund_owed" :
+                $order->setState(Mage_Sales_Model_Order::STATE_NEW);
+                $this->log("refund_owed order", $id);
+                Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundOwed($id);
+                $message = "The bitcoin payment invoice received an incorrect payment. To request a refund please contact support@yellowpay.co and include your ".$order->getIncrementId()." order number as well as the invoice id " . $data['id'];
+                $order->addStatusToHistory(
+                    $this->getFailedStatus(),
+                    $message,
+                    true
+                );
+                $order->setIsVisibleOnFront(1);
+                $order->save();
+                break;
             case $data["status"] == "refund_requested" :
                 $order->setState(Mage_Sales_Model_Order::STATE_NEW);
                 if (!$order->canCancel()) {
@@ -520,9 +533,10 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($id);
                     $order->addStatusToHistory(
                         $this->getFailedStatus(),
-                        "refund_requested. Invoice #{$id} ",
+                        "Your request for a refund has been received! We'll be in touch soon. In the mean time, you can reach us at support@yellowpay.co",
                         true
                     );
+                    $order->setIsVisibleOnFront(1);
                     $order->cancel();
                     $order->save();
                     $this->log("Order cancelled. Order #" . $order->getIncrementId(), $id);
@@ -538,7 +552,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($id);
                     $order->addStatusToHistory(
                         $this->getFailedStatus(),
-                        "Invoice expired. Invoice #{$id}",
+                        "The bitcoin payment invoice has expired, please place your order again to receive a new invoice.",
                         true
                     );
                     $order->cancel();
