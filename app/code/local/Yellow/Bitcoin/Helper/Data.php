@@ -27,6 +27,7 @@
  **/
 class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
 {
+
     /**
      * check if the fullScreen setting is set to yes / no
      * @return bool
@@ -63,4 +64,23 @@ class Yellow_Bitcoin_Helper_Data extends Mage_Core_Helper_Abstract
         return str_replace("https://" , "http://" , $url);
     }
 
+    /**
+     * return platform version
+     * @return string
+     */
+    public function getPlatformVersion()
+    {
+        $platform = "Magento " . Mage::getEdition() ." ". Mage::getVersion();
+        return  $platform;
+    }
+
+    /**
+     * return  plugin version
+     * @return string
+     */
+    public function getModuleVersion()
+    {
+        $plugin  = (string) Mage::getConfig()->getNode()->modules->Yellow_Bitcoin->version;
+        return $plugin;
+    }
 }

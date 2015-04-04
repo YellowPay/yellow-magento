@@ -148,7 +148,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                 case 'paid':
                     $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus();
                     $status_message = "Payment confirmation received. Invoice Id: " . $body['id']; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
+                    $commentHistory = $order->addStatusHistoryComment($status_message,$status);
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
                     $order->sendNewOrderEmail();
                     $order->save();
@@ -162,13 +163,15 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                 case 'reissue':
                     $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had reissue / renew payment ready
                     $status_message = "Client re-issued the invoice. Invoice Id: " . $body['id']; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
+                    $commentHistory = $order->addStatusHistoryComment($status_message,$status);
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->save();
                     break;
                 case 'partial':
                     $status = Mage::getModel("bitcoin/bitcoin")->getSuccessStatus(); /// this must bn changed when we had partial payment ready
                     $status_message = "Client made a partial payment. Invoice Id: " . $body['id']; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
+                    $commentHistory = $order->addStatusHistoryComment($status_message,$status);
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->save();
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsPartial($body["id"]);
                     break;
@@ -176,7 +179,8 @@ class Yellow_Bitcoin_IndexController extends Mage_Core_Controller_Front_Action
                 case 'invalid':
                     $status = Mage::getModel("bitcoin/bitcoin")->getFailedStatus();
                     $status_message = "Client failed to pay. Invoice Id: " . $body['id']; // $invoice["message"];
-                    $order->addStatusToHistory($status, $status_message);
+                    $commentHistory = $order->addStatusHistoryComment($status_message,$status);
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->setState(Mage_Sales_Model_Order::STATE_HOLDED);
                     $order->cancel();
                     $order->save();

@@ -248,8 +248,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 $payment->setIsTransactionPending(true);
                 $order = $payment->getOrder();
                 $status_message = "Yellow invoice created. Invoice Id: " . $invoice['id'];
-                $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, $status_message);
-
+                $commentHistory = $order->addStatusHistoryComment($status_message,Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW);
+                $commentHistory->setIsVisibleOnFront(1);
                 /* start to invoice the order */
                 /*$order = $payment->getOrder();
                 $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, true)->save();
@@ -331,12 +331,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
     }
 
     /**
-     *
+     * create a yellow invoice
      * @param Mage_Sales_Model_Quote $quote
-     * @param boolean $redirect
      * @return boolean
      */
-    public function createInvoice($quote, $redirect = true)
+    public function createInvoice($quote)
     {
         $this->clearSessionData();
         if (get_class($quote) == "Mage_Sales_Model_Quote") {
@@ -357,16 +356,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
             $ipnUrl = Mage::getUrl("bitcoin/index/ipn", array("_secure" => false, "id" => base64_encode($quote_id)));
         }
         $this->log( "GENERATED IPN URL : " . $ipnUrl);
-        $redirectUrl = "";
-        /*if ($redirect) {
-            $redirectUrl = Mage::getUrl("bitcoin/index/status");
-        }*/
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
             "base_price" => $base_price, /// Set to 0.30 for testing
             "base_ccy" => $base_ccy, /// Set to "USD" for testing
-            "callback" => $ipnUrl,
-            "redirect" => $redirectUrl
+            "callback" => $ipnUrl
         );
         $post_body = json_encode($yellow_payment_data);
         $nonce = round(microtime(true) * 1000);
@@ -490,11 +484,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 $this->log("Nothing to do. Redirecting back to the payment page.", $id);
                 break;
             case $data["status"] == "paid" :
-                $order->addStatusToHistory(
-                    $this->getSuccessStatus(),
+                $commentHistory = $order->addStatusHistoryComment(
                     "Payment confirmed. Invoice Id: " . $data["id"],
-                    true
+                    $this->getSuccessStatus()
                 );
+                $commentHistory->setIsVisibleOnFront(1);
                 $order->sendNewOrderEmail();
                 $order->save();
                 Mage::getResourceModel("bitcoin/ipn")->MarkAsPaid($id);
@@ -504,10 +498,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 $invoiceModel->capture($invoice_id);
                 break;
             case $data["status"] == "authorizing":
-                $order->addStatusToHistory(
-                    Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW,
-                    "Authorizing payment. This typically takes 10 minutes. Invoice Id: {$data['id']}"
+                $commentHistory = $order->addStatusHistoryComment(
+                    "Authorizing payment. This typically takes 10 minutes. Invoice Id: {$data['id']}",
+                    Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW
                 );
+                $commentHistory->setIsVisibleOnFront(1);
                 $order->save();
                 Mage::getResourceModel("bitcoin/ipn")->MarkAsAuthorizing($id);
                 break;
@@ -516,12 +511,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 $this->log("refund_owed order", $id);
                 Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundOwed($id);
                 $message = "The bitcoin payment invoice received an incorrect payment. To request a refund please contact support@yellowpay.co and include your ".$order->getIncrementId()." order number as well as the invoice id " . $data['id'];
-                $order->addStatusToHistory(
-                    $this->getFailedStatus(),
+                $commentHistory = $order->addStatusHistoryComment(
                     $message,
-                    true
+                    $this->getFailedStatus()
                 );
-                $order->setIsVisibleOnFront(1);
+                $commentHistory->setIsVisibleOnFront(1);
                 $order->save();
                 break;
             case $data["status"] == "refund_requested" :
@@ -531,12 +525,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 } else {
                     $this->log("refund_requested order", $id);
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsRefundRequested($id);
-                    $order->addStatusToHistory(
-                        $this->getFailedStatus(),
+                    $commentHistory = $order->addStatusHistoryComment(
                         "Your request for a refund has been received! We'll be in touch soon. In the mean time, you can reach us at support@yellowpay.co",
-                        true
+                        $this->getFailedStatus()
                     );
-                    $order->setIsVisibleOnFront(1);
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->cancel();
                     $order->save();
                     $this->log("Order cancelled. Order #" . $order->getIncrementId(), $id);
@@ -550,11 +543,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
                 } else {
                     $this->log("Order expired : " . $order->getIncrementId(), $id);
                     Mage::getResourceModel("bitcoin/ipn")->MarkAsExpired($id);
-                    $order->addStatusToHistory(
-                        $this->getFailedStatus(),
+                    $commentHistory = $order->addStatusHistoryComment(
                         "The bitcoin payment invoice has expired, please place your order again to receive a new invoice.",
-                        true
+                        $this->getFailedStatus()
                     );
+                    $commentHistory->setIsVisibleOnFront(1);
                     $order->cancel();
                     $order->save();
                     $this->log("Order cancelled. Order #" . $order->getIncrementId(), $id);
@@ -624,11 +617,18 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
      */
     private function getHeaders($nonce, $signature)
     {
+        //current platform information
+        $helper   = Mage::helper("bitcoin");
+        $platform = $helper->getPlatformVersion();
+        $plugin   = $helper->getModuleVersion();
+
         $headers = array(
             "Content-type:application/json",
             "API-Key:" . Mage::helper('core')->decrypt($this->getConfiguration('public_key')),
             "API-Nonce:$nonce",
-            "API-Sign:$signature"
+            "API-Sign:$signature",
+            "Platform:" . $platform ,
+            "plugin:" . $plugin
         );
         return $headers;
     }

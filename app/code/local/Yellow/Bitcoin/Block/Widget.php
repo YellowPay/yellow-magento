@@ -75,7 +75,7 @@ class Yellow_Bitcoin_Block_Widget extends Mage_Checkout_Block_Onepage_Payment
         }
         $quote = $this->getQuote();
         $payment = $quote->getPayment()->getMethodInstance();
-        $invoice = $payment->createInvoice($quote, false);
+        $invoice = $payment->createInvoice($quote);
         $this->server_root = $instance->getConfiguredServerRoot();
         return $invoice['url'];
     }
