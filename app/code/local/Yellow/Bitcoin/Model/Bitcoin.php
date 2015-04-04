@@ -627,8 +627,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
             "API-Key:" . Mage::helper('core')->decrypt($this->getConfiguration('public_key')),
             "API-Nonce:$nonce",
             "API-Sign:$signature",
-            "Platform:" . $platform ,
-            "plugin:" . $plugin
+            "API-Platform:" . $platform ,
+            "API-Plugin:" . $plugin
         );
         return $headers;
     }
