@@ -33,7 +33,7 @@ SOFTWARE.
             <depends>
                 <Mage_Payment/>
             </depends>
-            <version>0.2.4</version>
+            <version>1.0.0</version>
         </Yellow_Bitcoin>
     </modules>
 </config>
