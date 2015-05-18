@@ -146,7 +146,7 @@ SOFTWARE.
                         </db_log>
                         <show_logo translate="label">
                             <comment>
-                                weather to show an image or just simple text , selecting yes will show an image , no will display simple text
+                                Whether to show an image (Yes) or just text (No) for the payment option
                             </comment>
                             <label>Show bitcoin logo on checkout</label>
                             <frontend_type>select</frontend_type>
