@@ -117,7 +117,7 @@ SOFTWARE.
                             <show_in_store>0</show_in_store>
                         </currencies>
                         <public_key translate="label">
-                            <label>Public key</label>
+                            <label>API Key</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>10</sort_order>
@@ -126,7 +126,7 @@ SOFTWARE.
                             <show_in_store>1</show_in_store>
                         </public_key>
                         <private_key translate="label">
-                            <label>Private key</label>
+                            <label>API Secret</label>
                             <frontend_type>obscure</frontend_type>
                             <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
                             <sort_order>11</sort_order>
