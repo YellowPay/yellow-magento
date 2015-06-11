@@ -1,8 +1,8 @@
-<div id="bitcoin">
 <?php if(Mage::getStoreConfig("payment/bitcoin/show_logo")):?>
 <!-- Yellow Logo -->
     <img src="<?php echo $this->getSkinUrl('images/bitcoin/bitcoin_accepted.png', array('_secure' => true)); ?>"
-         alt="<?php echo Mage::helper('bitcoin')->__('Yellow Bitcoin') ?>" class="v-middle" style="height:35px;"/>
+         alt="<?php echo Mage::helper('bitcoin')->__('Yellow Bitcoin') ?>" class="v-middle" style="height:35px;" 
+         id="yellow-logo"/>
     <span style="margin-top: 6px;">
         &nbsp;<?php //echo Mage::helper('bitcoin')->__('Powered By Yellow'); ?>
         <small>
@@ -13,13 +13,10 @@
     </span>
 <!-- Yellow Logo -->
 <?php else : ?>
-    <p>
         <?php echo $this->__("Pay with Bitcoin");?>
         <small>
             <a href="<?php echo "http://yellowpay.co/what-is-bitcoin"; ?>" target="_blank">
                 <?php echo Mage::helper('bitcoin')->__('What is Bitcoin ?'); ?>
             </a>
         </small>
-    </p>
 <?php endif;?>
-</div>
