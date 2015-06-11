@@ -46,15 +46,6 @@ class Yellow_Bitcoin_Block_Form_Bitcoin extends Mage_Payment_Block_Form
     protected function _construct()
     {
         $class = Mage::getConfig()->getBlockClassName('core/template');
-
-        $guide = "";
-
-        if (Mage::helper("bitcoin")->isFullScreen()) {
-            $guide = new $class;
-            $guide->setTemplate("bitcoin/form/bitcoin.phtml");
-            $guide = $guide->toHtml();
-        }
-
         try {
             $css_block = Mage::getModel('cms/block')->setStoreId(Mage::app()->getStore()->getId())->load(self::CSS_BLOCK_ID);
             if ($css_block->getData("is_active") == 1) {
@@ -76,7 +67,7 @@ class Yellow_Bitcoin_Block_Form_Bitcoin extends Mage_Payment_Block_Form
                 Mage::helper('bitcoin')->__('You will be paid via Yellow')
             )
             ->setMethodTitle('')
-            ->setMethodLabelAfterHtml($css_output . $logo->toHtml() . $guide);
+            ->setMethodLabelAfterHtml($css_output . $logo->toHtml());
 
         return parent::_construct();
     }
