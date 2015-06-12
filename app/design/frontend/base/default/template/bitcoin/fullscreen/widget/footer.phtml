@@ -14,9 +14,12 @@
             <div
                 class="yp-bolder-text"><?php echo $this->__($invoice["invoice_ccy"]); ?> <?php echo $this->__("{$invoice["invoice_price"]}"); ?> </div>
             <div class="yp-vertical-space-10"></div>
-            <div
-                id="yp-info"><?php echo $this->__($invoice["invoice_ccy"]); ?>  <?php echo $this->__("{$invoice["invoice_price"]}"); ?>
-                = <?php echo $this->__($invoice["base_ccy"]); ?>  <?php echo $this->__("{$invoice["base_price"]}"); ?></div>
+            <?php $formatted_price = Mage::getModel('directory/currency')->format($invoice["base_price"] ,
+                                                                                  array('display'=>Zend_Currency::NO_SYMBOL), false);?>
+            <div id="yp-info">
+                <?php echo $this->escapeHtml($invoice["invoice_ccy"]); ?>  <?php echo $this->escapeHtml($invoice["invoice_price"]); ?>
+                = <?php echo $this->escapeHtml($invoice["base_ccy"]); ?>  <?php echo $this->escapeHtml($formatted_price); ?>
+            </div>
         </div>
         <div id="yp-fullpage-info">
             <div class="yp-bolder-text"><?php echo $this->__("%s is proud to accept Bitcoin!", $storeName); ?></div>
