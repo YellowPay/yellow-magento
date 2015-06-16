@@ -116,10 +116,11 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
      */
     public function isAvailable($quote = null)
     {
-        parent::isAvailable($quote);
+        $isAvailable = parent::isAvailable($quote);
         $quoteCurrency = $quote->getData("quote_currency_code");
         $currencies = array_map('trim', explode(',', Mage::getStoreConfig('payment/bitcoin/currencies')));
-        return array_search($quoteCurrency, $currencies) !== false;
+        $is_allowed_to_use_currency =  array_search($quoteCurrency, $currencies) !== false;
+        return ($isAvailable && $is_allowed_to_use_currency);
     }
 
     /**
