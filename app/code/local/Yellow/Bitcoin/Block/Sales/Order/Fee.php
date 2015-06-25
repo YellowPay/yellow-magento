@@ -75,7 +75,7 @@ class Yellow_Bitcoin_Block_Sales_Order_Fee extends Mage_Core_Block_Template
      */
     public function initTotals()
     {
-        if ((float) $this->getOrder()->getBaseYellowFee()) {
+        if ((float) $this->getOrder()->getYellowFee()) {
             $source = $this->getSource();
             $value  = $source->getYellowFee();
             $label  = "Transaction Fee" ;

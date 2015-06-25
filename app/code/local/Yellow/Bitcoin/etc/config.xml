@@ -49,6 +49,7 @@ SOFTWARE.
                 <totals>
                     <yellow_fee>
                         <class>bitcoin/sales_order_total_invoice_fee</class>
+                        <renderer>bitcoin/sales_order_fee</renderer>
                         <after>subtotal,discount,tax</after>
                         <before>grand_total</before>
                     </yellow_fee>
@@ -58,6 +59,7 @@ SOFTWARE.
                 <totals>
                     <yellow_fee>
                         <class>bitcoin/sales_order_total_creditmemo_fee</class>
+                        <renderer>bitcoin/sales_order_fee</renderer>
                         <after>subtotal,discount,tax</after>
                         <before>grand_total</before>
                     </yellow_fee>

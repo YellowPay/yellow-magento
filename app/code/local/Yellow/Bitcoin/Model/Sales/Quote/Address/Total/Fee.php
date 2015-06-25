@@ -40,24 +40,22 @@ class Yellow_Bitcoin_Model_Sales_Quote_Address_Total_Fee extends Mage_Sales_Mode
         if (!count($items)) {
             return $this; //this makes only address type shipping to come through
         }
- 
- 
-        $quote = $address->getQuote();
+
+
         $model = Mage::getModel("bitcoin/bitcoin");
-
         if($model->canApplyFee($address)){
-            $fee = $model->getYellowFee();
-            //$totals = Mage::getSingleton('checkout/session')->getQuote()->getTotals(); //Total object
-            //$grandtotal = $totals["grand_total"]->getValue(); //Grand total value
-            //$fee = $grandtotal * $fee ;
-            if($fee > 0.00001 ){
-                //$this->_setBaseAmount($fee);
-                //$this->_setAmount($address->getQuote()->getStore()->convertPrice($fee, false));
+            $quote          = $address->getQuote();
+            $fee            = $model->getYellowFee();
 
+            $totals         = array_sum($address->getAllTotalAmounts());
+            //$baseTotals     = array_sum($address->getAllBaseTotalAmounts());
+            $fee            = $totals * $fee ;
+            if($fee > 0.00001 ){
+                $baseFee = $address->getQuote()->getStore()->convertPrice($fee, false);
                 $address->setYellowFee($fee);
-                $address->setBaseYellowFee($fee);
+                $address->setBaseYellowFee($baseFee);
                 $quote->setYellowFee($fee);
-                $quote->setBaseYellowFee($fee);
+                $quote->setBaseYellowFee($baseFee);
                 $address->setGrandTotal($address->getGrandTotal() + $address->getYellowFee());
                 $address->setBaseGrandTotal($address->getBaseGrandTotal() + $address->getBaseYellowFee());
             }
