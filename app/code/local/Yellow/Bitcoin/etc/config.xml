@@ -40,6 +40,7 @@ SOFTWARE.
                     <yellow_fee>
                         <class>bitcoin/sales_quote_address_total_fee</class>
                         <renderer>bitcoin/sales_order_fee</renderer>
+                        <admin_renderer>fee/adminhtml_sales_order_total_fee</admin_renderer>
                         <after>subtotal,discount,tax</after>
                         <before>grand_total</before>
                     </yellow_fee>

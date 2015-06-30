@@ -155,13 +155,13 @@ SOFTWARE.
                             <show_in_default>1</show_in_default>
                         </show_logo>
                         <transaction_fee>
-                            <label>Add transaction fees to order total</label>
+                            <label>Add Yellow fees to order total</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>14</sort_order>
                             <show_in_default>1</show_in_default>
                             <comment>
-                                Select Yes to let the customer pay his transaction fee
+                                Select Yes to have the customer pay the transaction fees
                             </comment>
                         </transaction_fee>
                         <sort_order translate="label">
