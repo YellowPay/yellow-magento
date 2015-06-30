@@ -49,7 +49,7 @@ class Yellow_Bitcoin_Model_Sales_Quote_Address_Total_Fee extends Mage_Sales_Mode
 
             $totals         = array_sum($address->getAllTotalAmounts());
             //$baseTotals     = array_sum($address->getAllBaseTotalAmounts());
-            $fee            = $totals * ( 1 - $fee ) ;
+            $fee            = ($totals * $fee) / (1 - $fee);
             if($fee > 0.00001 ){
                 $baseFee = $address->getQuote()->getStore()->convertPrice($fee, false);
                 $address->setYellowFee($fee);
