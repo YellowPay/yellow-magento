@@ -368,8 +368,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
             "base_price" => $base_price, /// Set to 0.30 for testing
-            "base_ccy" => $base_ccy, /// Set to "USD" for testing
-            "callback" => $ipnUrl
+            "base_ccy"   => $base_ccy, /// Set to "USD" for testing
+            "callback"   => $ipnUrl
         );
         $post_body = json_encode($yellow_payment_data);
         $nonce = round(microtime(true) * 1000);
@@ -754,7 +754,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
             if(!isset($data["fee"])){
                 throw new \Exception("expected fee amount and got : " . json_encode($data) , "500");
             }
-            return (float) $data["fee"];
+            return (float) round($data["fee"],2);
         } catch (\Exception $e) {
             $this->log($e->getMessage());
             $this->log("EXCEPTION:" . json_encode($e));

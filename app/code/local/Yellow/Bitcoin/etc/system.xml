@@ -33,7 +33,7 @@ SOFTWARE.
                     <label>Yellow Bitcoin</label>
                     <comment>
                         <![CDATA[ 
-                        <div class="v0.1.2">
+                        <div class="v1.0.3">
                             <a href="http://yellowpay.co/" target="_blank"><img src="https://avatars2.githubusercontent.com/u/8528793?v=2&s=100" alt= "YellowPay" width='100px' height='100px'/></a>
                             <p>This extension by <a href="http://www.yellowpay.co/" title="Applications for Ecommerce" style="color: #EA7601">Yellow</a> | <a href="http://yellowpay.co" title="Get support for this extension" style="color: #EA7601">Get Support</a></p>
                         </div>

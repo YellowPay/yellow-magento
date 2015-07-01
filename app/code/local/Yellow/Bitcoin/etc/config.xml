@@ -27,7 +27,7 @@ SOFTWARE.
 <config>
     <modules>
         <Yellow_Bitcoin>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <depends>
                 <Mage_Payment/>
             </depends>
