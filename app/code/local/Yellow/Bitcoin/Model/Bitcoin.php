@@ -754,7 +754,7 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
             if(!isset($data["fee"])){
                 throw new \Exception("expected fee amount and got : " . json_encode($data) , "500");
             }
-            return (float) round($data["fee"],2);
+            return (float) $data["fee"];
         } catch (\Exception $e) {
             $this->log($e->getMessage());
             $this->log("EXCEPTION:" . json_encode($e));

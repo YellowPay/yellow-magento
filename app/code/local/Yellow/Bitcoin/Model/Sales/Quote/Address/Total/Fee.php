@@ -33,9 +33,17 @@ class Yellow_Bitcoin_Model_Sales_Quote_Address_Total_Fee extends Mage_Sales_Mode
 
         parent::collect($address);
  
+        /// reset values
         $this->_setAmount(0);
         $this->_setBaseAmount(0);
- 
+
+        $address->setYellowFee(0);
+        $address->setBaseYellowFee(0);
+
+        $quote  = $address->getQuote();
+        $quote->setYellowFee(0);
+        $quote->setBaseYellowFee(0);
+
         $items = $this->_getAddressItems($address);
         if (!count($items)) {
             return $this; //this makes only address type shipping to come through
@@ -44,14 +52,11 @@ class Yellow_Bitcoin_Model_Sales_Quote_Address_Total_Fee extends Mage_Sales_Mode
 
         $model = Mage::getModel("bitcoin/bitcoin");
         if($model->canApplyFee($address)){
-            $quote          = $address->getQuote();
             $fee            = $model->getYellowFee();
-
             $totals         = array_sum($address->getAllTotalAmounts());
             //$baseTotals     = array_sum($address->getAllBaseTotalAmounts());
-            $fee            = number_format(($totals * $fee) / (1 - $fee) , 2 );
-
-            if($fee > 0.01 ){
+            $fee            = round(($totals * $fee) / (1 - $fee) , 2,  PHP_ROUND_HALF_UP );
+            if( $fee > 0 ){
                 $baseFee = $address->getQuote()->getStore()->convertPrice($fee, false);
                 $address->setYellowFee($fee);
                 $address->setBaseYellowFee($baseFee);
