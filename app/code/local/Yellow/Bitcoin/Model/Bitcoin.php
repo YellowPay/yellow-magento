@@ -758,10 +758,9 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         } catch (\Exception $e) {
             $this->log($e->getMessage());
             $this->log("EXCEPTION:" . json_encode($e));
-            return 0.00;
             Mage::throwException(
                 Mage::helper('bitcoin')->__(
-                    "We're sorry, an error has occurred while completing your request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co\n" . $e->getMessage()
+                    "We're sorry, an error has occurred while completing your `/profile` request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
                 )
             );
         }
