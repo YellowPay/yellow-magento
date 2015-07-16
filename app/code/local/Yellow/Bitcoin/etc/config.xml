@@ -27,13 +27,94 @@ SOFTWARE.
 <config>
     <modules>
         <Yellow_Bitcoin>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <depends>
                 <Mage_Payment/>
             </depends>
         </Yellow_Bitcoin>
     </modules>
     <global>
+        <sales>
+            <quote>
+                <totals>
+                    <yellow_fee>
+                        <class>bitcoin/sales_quote_address_total_fee</class>
+                        <renderer>bitcoin/sales_order_fee</renderer>
+                        <admin_renderer>fee/adminhtml_sales_order_total_fee</admin_renderer>
+                        <after>subtotal,discount,tax</after>
+                        <before>grand_total</before>
+                    </yellow_fee>
+                </totals>
+            </quote>
+            <order_invoice>
+                <totals>
+                    <yellow_fee>
+                        <class>bitcoin/sales_order_total_invoice_fee</class>
+                        <renderer>bitcoin/sales_order_fee</renderer>
+                        <after>subtotal,discount,tax</after>
+                        <before>grand_total</before>
+                    </yellow_fee>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <yellow_fee>
+                        <class>bitcoin/sales_order_total_creditmemo_fee</class>
+                        <renderer>bitcoin/sales_order_fee</renderer>
+                        <after>subtotal,discount,tax</after>
+                        <before>grand_total</before>
+                    </yellow_fee>
+                </totals>
+            </order_creditmemo>
+       </sales>
+        <events>
+            <sales_order_invoice_save_after>
+                <observers>
+                    <sales_order_invoice_save_after>
+                        <class>bitcoin/observer</class>
+                        <method>invoiceSaveAfter</method>
+                    </sales_order_invoice_save_after>
+                </observers>
+            </sales_order_invoice_save_after>
+            <sales_order_creditmemo_save_after>
+                <observers>
+                    <sales_order_creditmemo_save_after>
+                        <class>bitcoin/observer</class>
+                        <method>creditmemoSaveAfter</method>
+                    </sales_order_creditmemo_save_after>
+                </observers>
+            </sales_order_creditmemo_save_after>
+        </events>
+        <fieldsets>
+            <sales_convert_quote_address>
+                <yellow_fee>
+                    <to_order>*</to_order>
+                </yellow_fee>
+                <base_yellow_fee>
+                    <to_order>*</to_order>
+                </base_yellow_fee>
+            </sales_convert_quote_address>
+            <sales_convert_quote_item>
+                <yellow_fee>
+                    <to_order>*</to_order>
+                </yellow_fee>
+                <base_yellow_fee>
+                    <to_order>*</to_order>
+                </base_yellow_fee>
+            </sales_convert_quote_item>
+        </fieldsets>
+        <pdf>
+            <totals>
+                <yellow_fee translate="title">
+                    <title>Transaction Fee</title>
+                    <source_field>yellow_fee</source_field>
+                    <font_size>7</font_size>
+                    <display_zero>0</display_zero>
+                    <sort_order>650</sort_order>
+                    <amount_prefix></amount_prefix>
+                </yellow_fee>
+            </totals>
+        </pdf>
         <helpers>
             <bitcoin>
                 <class>Yellow_Bitcoin_Helper</class>
@@ -183,6 +264,7 @@ SOFTWARE.
                 <private_key></private_key>
                 <payment_action>authorize</payment_action>
                 <db_log>0</db_log>
+                <transaction_fee>0</transaction_fee>
             </bitcoin>
         </payment>
     </default>

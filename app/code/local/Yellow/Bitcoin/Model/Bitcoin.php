@@ -89,6 +89,14 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
     private $api_uri_check_payment = "invoice/[id]/";
 
     /**
+     * check profile data
+     *
+     * @var String
+     */
+    private $api_profile = "profile/";
+    
+
+    /**
      * @type Mage_Sales_Model_Order
      **/
     private $order;
@@ -360,8 +368,8 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         $http_client = $this->getHTTPClient();
         $yellow_payment_data = array(
             "base_price" => $base_price, /// Set to 0.30 for testing
-            "base_ccy" => $base_ccy, /// Set to "USD" for testing
-            "callback" => $ipnUrl
+            "base_ccy"   => $base_ccy, /// Set to "USD" for testing
+            "callback"   => $ipnUrl
         );
         $post_body = json_encode($yellow_payment_data);
         $nonce = round(microtime(true) * 1000);
@@ -704,4 +712,57 @@ Class Yellow_Bitcoin_Model_Bitcoin extends Mage_Payment_Model_Method_Abstract
         return $this->server_root;
     }
 
+    /**
+     * @param Mage_Sales_Model_Quote_Address $address
+     * @return bool
+     */
+    public  function canApplyFee(Mage_Sales_Model_Quote_Address $address)
+    {
+        $isEnabled = (bool) $this->getConfiguration("transaction_fee");
+        if(!$isEnabled)
+        {
+            return false;
+        }
+        //// check if the user select yellow as his selected payment method
+        if($address->getQuote()->getPayment()->getMethod() !== self::getCode())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @return float
+     * @throws Mage_Core_Exception
+     * @throws Zend_Http_Client_Exception
+     */
+    public  function getYellowFee()
+    {
+        $url = $this->server_root . $this->api_profile;
+        $nonce = round(microtime(true) * 1000);
+        $message = $nonce . $url;
+        $private_key = Mage::helper('core')->decrypt($this->getConfiguration("private_key"));
+        $hash = hash_hmac("sha256", $message, $private_key, false);
+        $http_client = $this->getHTTPClient();
+        $http_client->setHeaders($this->getHeaders($nonce, $hash));
+        $http_client->setMethod("GET")->setUri($url);
+        try {
+            $body = $http_client->request()->getBody();
+            $data = json_decode($body, true);
+            if(!isset($data["fee"])){
+                throw new \Exception("expected fee amount and got : " . json_encode($data) , "500");
+            }
+            return (float) $data["fee"];
+        } catch (\Exception $e) {
+            $this->log($e->getMessage());
+            $this->log("EXCEPTION:" . json_encode($e));
+            Mage::throwException(
+                Mage::helper('bitcoin')->__(
+                    "We're sorry, an error has occurred while completing your `/profile` request. Please refresh the page to try again. If the error persists, please send us an email at support@yellowpay.co"
+                )
+            );
+        }
+    }
 }

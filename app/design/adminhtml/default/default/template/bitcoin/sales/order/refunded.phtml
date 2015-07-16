@@ -1,0 +1,16 @@
+<?php if($this->getSource() instanceof Mage_Sales_Model_Order){ ?>
+<?php if ((float) $this->getSource()->getYellowFeeRefunded()): ?>
+    <tr>
+        <td class="label"><strong><?php echo Mage::helper('bitcoin')->__('Transaction fee refunded to customer') ?></strong></td>
+        <td><strong><?php echo $this->getSource()->getYellowFeeRefunded(); ?></strong></td>
+    </tr>
+<?php endif; ?>
+<?php } else { ?>
+<?php if ((float) $this->getSource()->getYellowFee()): ?>
+    <tr>
+        <td class="label"><strong><?php echo Mage::helper('bitcoin')->__('Transaction fee Refunded') ?></strong></td>
+        <td><strong><?php echo $this->getSource()->getYellowFee(); ?></strong></td>
+    </tr>
+<?php endif; 
+}?>
+
